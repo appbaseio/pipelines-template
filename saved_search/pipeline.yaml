@@ -1,0 +1,24 @@
+enabled: true
+description: Pipeline to save search to an Elasticsearch index
+routes:
+  - path: "/{index}/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  category: reactivesearch
+  index:
+    - test
+  saved_search_index: savedsearch
+  saved_search_credentials: ${{secrets.SAVED_SEARCH_CREDENTIALS}}
+stages:
+  - use: authorization
+  - id: modify_request
+    scriptRef: 'modifyRequest.js'
+  - id: save_search
+    async: true
+    scriptRef: 'saveSearch.js'
+  - use: reactivesearchQuery
+    needs:
+      - save_search
+  - use: elasticsearchQuery
