@@ -58,6 +58,8 @@ envs:
 
 In the above, the `secrets.KNOWLEDGE_GRAPH_API_KEY` will be resolved to the stored value in GitHub Secrets. [Read more about storing secrets on GitHub](https://docs.github.com/en/actions/security-guides/encrypted-secrets).
 
+### Async
+
 Another important thing to note here is that the stage is defined with `async` field set to `true`. This just means that the script needs to be run asynchronously. The stage will wait for the script to complete or timeout (whichever happens first).
 
 This field is important because the function defined in the script for this stage is defined with the `async` keyword and utilizes `await` inside the function defintion.
