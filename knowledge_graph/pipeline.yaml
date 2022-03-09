@@ -1,0 +1,28 @@
+enabled: true
+description: Pipeline to retrieve and merge Google knowledge graph response to ES
+  response
+routes:
+  - path: "/{index}/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  category: reactivesearch
+  index:
+    - test
+  knowledgeGraphAPIKey: ${{secrets.knowledgeGraphAPIKey}}
+stages:
+  - use: authorization
+  - id: modify_request
+    scriptRef: "modifyRequest.js"
+  - use: reactivesearchQuery
+  - id: google_knowledge_graph
+    async: true
+    scriptRef: "googleKnowledgeGraph.js"
+  - use: elasticsearchQuery
+    async: true
+  - id: merge_response
+    needs:
+      - elasticsearchQuery
+      - google_knowledge_graph
+    scriptRef: "merge.js"

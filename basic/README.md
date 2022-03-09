@@ -1,4 +1,4 @@
-### Basic Pipeline
+# Basic Pipeline
 
 This is a basic pipeline that mocks the reactivesearch endpoint by defining a few steps:
 
