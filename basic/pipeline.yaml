@@ -1,0 +1,17 @@
+enabled: true
+description: "Basic pipeline to mock reactivesearch"
+routes:
+  - path: "/{index}/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+stages:
+  - id: auth
+    use: authorization
+  - id: modify request
+    scriptRef: modifyRequest.js
+  - id: query
+    use: reactivesearchQuery
+  - id: es_query
+    use: elasticsearchQuery
+    async: true
