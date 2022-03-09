@@ -1,0 +1,14 @@
+name: ReactiveSearch Pipeline Deployment
+
+on: [push]
+
+jobs:
+  deploy_pipeline:
+    runs-on: ubuntu-latest
+    name: Deploy the pipeline
+    steps:
+      - name: Deploy Pipeline
+        uses: appbaseio/pipelines-action@0.1.1
+        with:
+          url: ${{secrets.APPBASEIOURL}}
+          file: "./basic/pipeline.yaml"
