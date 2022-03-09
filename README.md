@@ -4,8 +4,6 @@ This repo acts as a _get started_ template repo for the end user that just wants
 
 ### \[[What are Pipelines?](#what-are-pipelines)] \[[Pipelines Provided](#pipelines-provided)] \[[Prerequisites](#prerequisites)]
 
-<br/>
-
 ## What are Pipelines?
 
 **TL;DR**
