@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy the pipeline
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
       - name: Deploy Pipeline
         uses: appbaseio/pipelines-action@0.1.1
         with:
