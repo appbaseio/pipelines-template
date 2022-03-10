@@ -10,7 +10,7 @@ envs:
   category: reactivesearch
   index:
     - test
-  knowledgeGraphAPIKey: ${{secrets.KNOWLEDGE_GRAPH_API_KEY}}
+  knowledgeGraphAPIKey: ${{ KNOWLEDGE_GRAPH_API_KEY }}
 stages:
   - use: authorization
   - id: modify_request
