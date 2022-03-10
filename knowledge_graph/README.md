@@ -4,21 +4,25 @@ This pipeline fetches data from Google's Knowledge graph and merges it with the 
 
 ## Envs
 
-Following values need to be populated in GitHub secrets for this example to work as expected ([Read about GitHub Secrets here](https://docs.github.com/en/actions/security-guides/encrypted-secrets)):
+Following values need to be passed in the step `env` key while using the `pipelines-action`.
 
-- `KNOWLEDGE_GRAPH_API_KEY`: Google knowledge graph API key.
+- `KNOWLEDGE_GRAPH_API_KEY`: Credentials to hit ElasticSearch to save the search.
 
-Once done, the env should be passed in the step where the pipeline action is called in the following way:
+They can be passed in the following way
 
 ```yaml
 - name: Deploy Pipeline
   uses: appbaseio/pipelines-action@0.1.1
   with:
     url: ${{secrets.APPBASEIOURL}}
-    file: "./basic/pipeline.yaml"
+    file: "./knowledge_graph/pipeline.yaml"
   env:
     KNOWLEDGE_GRAPH_API_KEY: ${{ secrets.KNOWLEDGE_GRAPH_API_KEY }}
 ```
+
+Note that the `KNOWLEDGE_GRAPH_API_KEY` is extracted from GitHub Secret. ([Read about GitHub Secrets here](https://docs.github.com/en/actions/security-guides/encrypted-secrets)):
+
+[Read more about passing envs to `pipelines-action` here](https://github.com/appbaseio/pipelines-action#environments)
 
 ---
 

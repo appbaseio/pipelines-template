@@ -16,7 +16,7 @@ They can be passed in the following way
   uses: appbaseio/pipelines-action@0.1.1
   with:
     url: ${{secrets.APPBASEIOURL}}
-    file: "./basic/pipeline.yaml"
+    file: "./saved_search/pipeline.yaml"
   env:
     SAVED_SEARCH_CREDENTIALS: ${{ secrets.SAVED_SEARCH_CREDENTIALS }}
     SAVED_SEARCH_INDEX: test-index
