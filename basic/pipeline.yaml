@@ -1,7 +1,7 @@
 enabled: true
 description: "Basic pipeline to mock reactivesearch"
 routes:
-  - path: "/{index}/_reactivesearch"
+  - path: "/basic-pipeline/_reactivesearch"
     method: POST
     classify:
       category: reactivesearch

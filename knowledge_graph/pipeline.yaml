@@ -2,7 +2,7 @@ enabled: true
 description: Pipeline to retrieve and merge Google knowledge graph response to ES
   response
 routes:
-  - path: "/{index}/_reactivesearch"
+  - path: "/knowledge-graph/_reactivesearch"
     method: POST
     classify:
       category: reactivesearch
