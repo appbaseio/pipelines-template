@@ -6,20 +6,8 @@ routes:
     classify:
       category: reactivesearch
 
-envs:
-  category: reactivesearch
-  index:
-    - good-books-ds-pipeline
-
 stages:
   - use: authorization
-    continueOnError: false
-  - id: mock-request-body
-    description: Mocks the request body
-    script:
-      "function handleRequest() { return { request: {...context.request, body:
-      JSON.stringify({ query: [{ id: 'search', value: 'harry', dataField: 'original_title'}],
-      settings: { recordAnalytics: true } })}}}"
     continueOnError: false
   - use: searchRelevancy
     inputs:
