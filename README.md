@@ -71,6 +71,7 @@ To use any of the pipeline provided, just the `file` path needs to be changed in
 | [Saved Search](https://github.com/appbaseio/pipelines-template/tree/master/saved_search)       | This pipeline is similar to the basic pipeline with an extra step that saves the search to an user preferred index                                                                                    | `./saved_search/pipeline.yaml`    |
 | [Http Request](https://github.com/appbaseio/pipelines-template/tree/master/http_request) | This pipeline shows how the `httpRequest` stage can be used to simplify the pipeline | `./http_request/pipeline.yaml` |
 | [Query Rules](https://github.com/appbaseio/pipelines-template/tree/master/query_rules) | This pipeline shows how to use query rules pre-built stages | `./query_rules/pipeline.yaml` |
+| [Cache & Analytics](https://github.com/appbaseio/pipelines-template/tree/master/cache_analytics) | This pipeline shows how to use caching and record analytics for search queries | `./cache_analytics/pipeline.yaml` | 
 
 ## Prerequisites
 
