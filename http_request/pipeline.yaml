@@ -1,0 +1,32 @@
+enabled: true
+description: Pipeline to show usage of httpRequest stage
+routes:
+  - path: books/suggestions
+    method: POST
+    classify:
+      category: reactivesearch
+
+stages:
+  - id: set_query
+    description: To extract the query key from request body
+    scriptRef: 'setQuery.js'
+    continueOnError: false
+  - id: data_muse_api
+    description: To get data from data muse api in asynchronous manner
+    use: httpRequest
+    async: true
+    inputs:
+      url: https://api.datamuse.com/sug
+      params:
+        s: "{{query}}"
+    continueOnError: false
+  - use: reactivesearchQuery
+    continueOnError: false
+  - use: elasticsearchQuery
+    async: true
+    continueOnError: false
+  - id: merge_response
+    description: Merges the data muse response to RS API response
+    needs:
+    - data_muse_api
+    scriptRef: 'merge.js'
