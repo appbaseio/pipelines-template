@@ -69,6 +69,7 @@ To use any of the pipeline provided, just the `file` path needs to be changed in
 | [Basic Pipeline](https://github.com/appbaseio/pipelines-template/tree/master/basic)            | This pipeline mocks reactivesearch by defining three basic steps, `authorization`, `reactivesearchQuery` and `elasticsearchQuery` along with a custom modify request script that modifies the request | `./basic/pipeline.yaml`           |
 | [Knowledge Graph](https://github.com/appbaseio/pipelines-template/tree/master/knowledge_graph) | This pipeline fetches data from Google's Knowledge graph and merges it with the ES response data                                                                                                      | `./knowledge_graph/pipeline.yaml` |
 | [Saved Search](https://github.com/appbaseio/pipelines-template/tree/master/saved_search)       | This pipeline is similar to the basic pipeline with an extra step that saves the search to an user preferred index                                                                                    | `./saved_search/pipeline.yaml`    |
+| [Http Request](https://github.com/appbaseio/pipelines-template/tree/master/http_request) | This pipeline shows how the `httpRequest` stage can be used to simplify the pipeline | `./http_request/pipeline.yaml`
 
 ## Prerequisites
 
