@@ -1,0 +1,35 @@
+enabled: true
+routes:
+- path: "/_fusion/_reactivesearch"
+  method: POST
+  classify:
+    category: reactivesearch
+- path: "/_fusion/_reactivesearch.v3"
+  method: POST
+  classify:
+    category: reactivesearch
+
+envs:
+  fusionCreds: ${{FUSION_CREDS}}
+  fusionHost: ${{FUSION_HOST_IP}}
+
+stages:
+- id: auth
+  use: authorization
+- id: extract app and profile
+  scriptRef: 'extractMetadata.js'
+  continueOnError: false
+- id: rs
+  use: reactivesearchQuery
+  inputs:
+    backend: solr
+  continueOnError: false
+- id: solr_query
+  use: solrQuery
+  continueOnError: false
+  inputs:
+    protocol: http
+    host: "{{fusionHost}}"
+    app: "{{fusionApp}}"
+    profile: "{{fusionProfile}}"
+    credentials: "{{fusionCreds}}"
