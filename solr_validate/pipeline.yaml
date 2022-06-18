@@ -1,0 +1,18 @@
+enabled: true
+routes:
+- path: "/_fusion/_reactivesearch/validate"
+  method: POST
+  classify:
+    category: reactivesearch
+
+stages:
+- id: auth
+  use: authorization
+- id: rs
+  use: reactivesearchQuery
+  inputs:
+    backend: solr
+  continueOnError: false
+- id: generate the query
+  scriptRef: generateQuery.js
+  continueOnError: false
