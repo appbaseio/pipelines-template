@@ -10,8 +10,31 @@ routes:
     category: reactivesearch
 
 envs:
-  fusionCreds: ${{FUSION_CREDS}}
-  fusionHost: ${{FUSION_HOST_IP}}
+  FUSION_CREDS: ${{FUSION_CREDS}}
+  FUSION_HOST: ${{FUSION_HOST_IP}}
+
+
+global_envs:
+  - label: Fusion Host
+    description: The IP address to the Fusion host along with the port
+    key: FUSION_HOST
+    value: ""
+    validate:
+      url: ${FUSION_HOST}
+      method: GET
+      headers:
+        Authorization: "`Basic ${btoa(${FUSION_CREDS})}`"
+      expected_status: 200
+  - label: Fusion Credentials
+    description: The credentials to access the above fusion host.
+    key: FUSION_CREDS
+    value: ""
+    validate:
+      url: ${FUSION_HOST}
+      method: GET
+      headers:
+        Authorization: "`Basic ${btoa(${FUSION_CREDS})}`"
+      expected_status: 200
 
 stages:
 - id: auth
