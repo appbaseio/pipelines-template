@@ -1,0 +1,38 @@
+enabled: true
+description: kNN based search for the app store
+routes:
+  - path: /app-store-data-ann/_reactivesearch
+    method: POST
+    classify:
+      category: elasticsearch
+      acl: search
+  - path: /app-store-data-ann/_reactivesearch.v3
+    method: POST
+    classify:
+      category: elasticsearch
+      acl: search
+
+envs:
+  method: POST
+  bertURL: ${{ BERT_URL }}
+
+stages:
+  - id: authorize user
+    use: authorization
+  - id: aNN search
+    scriptRef: "knnSearch.js"
+    async: true
+  - id: determine search
+    scriptRef: "determineSearch.js"
+    needs:
+      - aNN search
+  - id: es query
+    use: elasticsearchQuery
+    needs:
+      - determine search
+    inputs:
+      path: "{{esPath}}"
+  - id: update response
+    scriptRef: "updateResponse.js"
+    needs:
+      - es query
