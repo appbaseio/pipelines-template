@@ -74,6 +74,7 @@ To use any of the pipeline provided, just the `file` path needs to be changed in
 | [Cache & Analytics](https://github.com/appbaseio/pipelines-template/tree/master/cache_analytics) | This pipeline shows how to use caching and record analytics for search queries | `./cache_analytics/pipeline.yaml` |
 | [Solr](https://github.com/appbaseio/pipelines-template/tree/master/solr) | This pipeline shows how a relevant search endpoint is made to work with Solr | `./solr/pipeline.yaml` |
 | [Solr Validate](https://github.com/appbaseio/pipelines-template/tree/master/solr_validate) | This pipeline shows how a validate endpoint can be provided for Solr | `./solr_validate/pipeline.yaml` |
+| [MongoDB](https://github.com/appbaseio/pipelines-template/tree/master/mongodb) | Pipeline to show how MongoDB can be used as a search backend | `./mongodb/pipeline.yaml` |
 
 ## Prerequisites
 
