@@ -75,6 +75,8 @@ To use any of the pipeline provided, just the `file` path needs to be changed in
 | [Solr](https://github.com/appbaseio/pipelines-template/tree/master/solr) | This pipeline shows how a relevant search endpoint is made to work with Solr | `./solr/pipeline.yaml` |
 | [Solr Validate](https://github.com/appbaseio/pipelines-template/tree/master/solr_validate) | This pipeline shows how a validate endpoint can be provided for Solr | `./solr_validate/pipeline.yaml` |
 | [MongoDB](https://github.com/appbaseio/pipelines-template/tree/master/mongodb) | Pipeline to show how MongoDB can be used as a search backend | `./mongodb/pipeline.yaml` |
+| [Vector Indexing](https://github.com/appbaseio/pipelines-template/tree/master/vector_indexing) | Pipeline to show how indexing pipeline can be overridden to support indexing vector data | `./vector_indexing/pipeline.yaml` |
+| [kNN Search](https://github.com/appbaseio/pipelines-template/tree/master/knn_search) | Pipeline to show how kNN search can be done | `./knn_search/pipeline.yaml` |
 
 ## Prerequisites
 
