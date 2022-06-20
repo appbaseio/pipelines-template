@@ -41,6 +41,8 @@ stages:
   inputs:
     backend: mongodb
   continueOnError: false
+- id: extract envs to context
+  scriptRef: "extractEnvs.js"
 - use: mongoDBQuery
   inputs:
     host: "{{mongoHost}}"
