@@ -1,37 +1,38 @@
 enabled: true
-description: kNN based search for the app store
+description: kNN endpoint to search query in lyrics
+
 routes:
-  - path: /app-store-data-ann/_reactivesearch
+  - path: /knn_lyrics_app/_reactivesearch
     method: POST
     classify:
       category: elasticsearch
       acl: search
-  - path: /app-store-data-ann/_reactivesearch.v3
+  - path: /knn_lyrics_app/_reactivesearch.v3
     method: POST
     classify:
       category: elasticsearch
       acl: search
 
 envs:
-  method: POST
   bertURL: ${{ BERT_URL }}
+  index: "lyrics-app-data"
 
 stages:
   - id: authorize user
     use: authorization
-  - id: aNN search
+  - id: kNN vectors
     scriptRef: "knnSearch.js"
     async: true
   - id: determine search
     scriptRef: "determineSearch.js"
     needs:
-      - aNN search
+      - kNN search
   - id: es query
     use: elasticsearchQuery
-    needs:
-      - determine search
     inputs:
       path: "{{esPath}}"
+    needs:
+      - determine search
   - id: update response
     scriptRef: "updateResponse.js"
     needs:
