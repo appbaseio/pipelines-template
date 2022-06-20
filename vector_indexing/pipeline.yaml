@@ -1,0 +1,38 @@
+enabled: true
+description: Index pipeline to store vectorized data
+
+routes:
+  - path: /lyrics-app-data/_doc
+    method: POST
+    classify:
+      category: elasticsearch
+      acl: index
+
+envs:
+  bertURL: ${{ BERT_URL }}
+  method: POST
+
+stages:
+  - id: authorize user
+    use: authorization
+  - id: add body for vector request
+    scriptRef: "addBody.js"
+  - id: lyric_vector
+    use: httpRequest
+    async: true
+    inputs:
+      url: "{{bertURL}}/post"
+      method: POST
+      headers:
+        "Content-Type": "application/json"
+      body: "{{lyricBody}}"
+    continueOnError: false
+  - id: merge vector
+    scriptRef: "mergeVector.js"
+    needs:
+      - lyric_vector
+    continueOnError: false
+  - id: index data
+    use: elasticsearchQuery
+    needs:
+      - merge vector
