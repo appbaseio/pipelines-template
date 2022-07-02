@@ -2,6 +2,8 @@
 
 This is a basic pipeline that mocks the reactivesearch endpoint by defining a few stages
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/basic/pipeline_oneclick.yaml)
+
 As explained in the main README file, a pipeline consists of a few stages. The stages defined in this pipeline are:
 
 ## Auth
