@@ -17,6 +17,12 @@ envs:
   bertURL: ${{ BERT_URL }}
   index: "lyrics-app-data"
 
+global_envs:
+  - key: bertURL
+    value: ${{ BERT_URL }}
+    description: "URL to hit to generate the vector"
+    label: "Bert API URL"
+
 stages:
   - id: authorize user
     use: authorization
