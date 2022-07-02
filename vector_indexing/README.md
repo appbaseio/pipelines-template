@@ -2,6 +2,8 @@
 
 This pipeline demonstrates how an indexing pipeline can be created that supports indexing vectors automatically to be used in kNN while searching.
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/vector_indexing/pipeline_oneclick.yaml)
+
 ### [This is part of a bigger project and can be found here](https://github.com/appbaseio-apps/song-search)
 
 ## Before starting

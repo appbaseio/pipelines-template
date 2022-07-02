@@ -2,6 +2,8 @@
 
 This pipeline shows how to use the pipeline functionality with Fusion (or Solr) to build a search relevant search pipeline.
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/solr/pipeline_oneclick.yaml)
+
 ## Envs
 
 The following environment variables are required for the pipeline to work properly.

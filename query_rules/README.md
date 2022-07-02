@@ -2,6 +2,8 @@
 
 This pipeline explains how to use multiple pre-built stages to build a full-fledged search pipeline that does a lot of things like search relevancy, promoting results, replacing search term etc.
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/query_rules/pipeline.yaml)
+
 ## Authorization
 
 As usual, using `authorization` stage is a must in a public facing pipeline since this will ensure that only proper credentials has access to the endpoint. [Read more about authorization stage here](https://docs.appbase.io/docs/pipelines/how-to/handle-authorization-effectively).
