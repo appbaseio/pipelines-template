@@ -2,6 +2,8 @@
 
 This pipeline shows the usage of `httpRequest` pre-built stage by utilizing in the pipeline.
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/http_request/pipeline_oneclick.yaml)
+
 ## Set Query
 
 This stage merely uses a JS script that [can be found here](./setQuery.js) to extract the user passed query and set it in the context against the key `query`. This is useful in the following stages.
