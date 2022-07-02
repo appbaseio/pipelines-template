@@ -12,10 +12,20 @@ envs:
   saved_search_index: ${{ SAVED_SEARCH_INDEX }}
   saved_search_credentials: ${{ SAVED_SEARCH_CREDENTIALS }}
 
+global_envs:
+  - key: saved_search_index
+    value: ""
+    description: "Index to save the search in"
+    label: "Save Search index"
+  - key: saved_search_credentials
+    value: ""
+    description: "Save search index credentials to be able to index properly"
+    label: "Save search index credentials"
+
 stages:
   - use: authorization
   - id: modify_request
-    scriptRef: "modifyRequest.js"
+    script: "function handleRequest() { const reqBody = JSON.parse(context.request.body); return { request: { ...context.request, body: JSON.stringify({ ...reqBody, query: [...reqBody.query, { id: 'search2' }] }) } }; }"
   - id: save_search
     async: true
     scriptRef: "saveSearch.js"

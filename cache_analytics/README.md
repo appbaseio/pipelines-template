@@ -2,6 +2,8 @@
 
 This pipeline shows how to use the pre-built stages provided to cache the responses as well as use analytics
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/cache_analytics/pipeline_oneclick.yaml)
+
 ## Authorization
 
 Authorization stage takes care of verifying the entity trying to access the endpoint by making sure the credentials are valid. This should always be the first stage in a public facing pipeline.

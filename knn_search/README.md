@@ -2,6 +2,8 @@
 
 This pipeline shows how to make a vector search endpoint.
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/knn_search/pipeline_oneclick.yaml)
+
 ### [This is part of a bigger project and can be found here](https://github.com/appbaseio-apps/song-search)
 
 ## Before starting

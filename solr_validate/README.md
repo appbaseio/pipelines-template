@@ -2,6 +2,8 @@
 
 This pipeline shows how to provide a `/validate` endpoint for Solr backend and return the built query in response instead of making the search request.
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/solr_validate/pipeline_oneclick.yaml)
+
 ## Auth
 
 This stage handles authorization using the [authorization](https://docs.appbase.io/docs/pipelines/how-to/handle-authorization-effectively/) pre-built stage to make sure only valid credentials are allowed access to the endpoint.

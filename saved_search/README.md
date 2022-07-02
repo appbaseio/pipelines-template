@@ -2,6 +2,8 @@
 
 This pipeline is similar to the basic pipeline with an extra step that saves the search to an user preferred index
 
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/saved_search/pipeline_oneclick.yaml)
+
 ## Envs
 
 Following values need to be passed in the step `env` key while using the `pipelines-action`.
