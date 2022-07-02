@@ -11,13 +11,14 @@ envs:
     - test
   saved_search_index: ${{ SAVED_SEARCH_INDEX }}
   saved_search_credentials: ${{ SAVED_SEARCH_CREDENTIALS }}
+
 stages:
   - use: authorization
   - id: modify_request
-    scriptRef: 'modifyRequest.js'
+    scriptRef: "modifyRequest.js"
   - id: save_search
     async: true
-    scriptRef: 'saveSearch.js'
+    scriptRef: "saveSearch.js"
   - use: reactivesearchQuery
     needs:
       - save_search
