@@ -69,6 +69,14 @@ To use any of the pipeline provided, just the `file` path needs to be changed in
 | [Basic Pipeline](https://github.com/appbaseio/pipelines-template/tree/master/basic)            | This pipeline mocks reactivesearch by defining three basic steps, `authorization`, `reactivesearchQuery` and `elasticsearchQuery` along with a custom modify request script that modifies the request | `./basic/pipeline.yaml`           |
 | [Knowledge Graph](https://github.com/appbaseio/pipelines-template/tree/master/knowledge_graph) | This pipeline fetches data from Google's Knowledge graph and merges it with the ES response data                                                                                                      | `./knowledge_graph/pipeline.yaml` |
 | [Saved Search](https://github.com/appbaseio/pipelines-template/tree/master/saved_search)       | This pipeline is similar to the basic pipeline with an extra step that saves the search to an user preferred index                                                                                    | `./saved_search/pipeline.yaml`    |
+| [Http Request](https://github.com/appbaseio/pipelines-template/tree/master/http_request) | This pipeline shows how the `httpRequest` stage can be used to simplify the pipeline | `./http_request/pipeline.yaml` |
+| [Query Rules](https://github.com/appbaseio/pipelines-template/tree/master/query_rules) | This pipeline shows how to use query rules pre-built stages | `./query_rules/pipeline.yaml` |
+| [Cache & Analytics](https://github.com/appbaseio/pipelines-template/tree/master/cache_analytics) | This pipeline shows how to use caching and record analytics for search queries | `./cache_analytics/pipeline.yaml` |
+| [Solr](https://github.com/appbaseio/pipelines-template/tree/master/solr) | This pipeline shows how a relevant search endpoint is made to work with Solr | `./solr/pipeline.yaml` |
+| [Solr Validate](https://github.com/appbaseio/pipelines-template/tree/master/solr_validate) | This pipeline shows how a validate endpoint can be provided for Solr | `./solr_validate/pipeline.yaml` |
+| [MongoDB](https://github.com/appbaseio/pipelines-template/tree/master/mongodb) | Pipeline to show how MongoDB can be used as a search backend | `./mongodb/pipeline.yaml` |
+| [Vector Indexing](https://github.com/appbaseio/pipelines-template/tree/master/vector_indexing) | Pipeline to show how indexing pipeline can be overridden to support indexing vector data | `./vector_indexing/pipeline.yaml` |
+| [kNN Search](https://github.com/appbaseio/pipelines-template/tree/master/knn_search) | Pipeline to show how kNN search can be done | `./knn_search/pipeline.yaml` |
 
 ## Prerequisites
 
