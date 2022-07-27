@@ -15,11 +15,11 @@ envs:
 global_envs:
   - key: saved_search_index
     value: ""
-    description: "Index to save the search in"
+    description: "Elasticsearch index to save the search in (assumes this is in the same ES cluster)"
     label: "Save Search index"
   - key: saved_search_credentials
     value: ""
-    description: "Save search index credentials to be able to index properly"
+    description: "Basic auth credentials in `username:password` format, leave empty for no credentials"
     label: "Save search index credentials"
 
 stages:
