@@ -14,8 +14,8 @@ envs:
 
 global_envs:
   - key: bertURL
-    value: ${{ BERT_URL }}
-    description: "URL to hit to generate the vector"
+    value: "https://demo-cas.jina.ai:8443"
+    description: "Hosted URL to hit to encode a vector string, can use Jina's demo server: https://demo-cas.jina.ai:8443"
     label: "Bert API URL"
 
 stages:
