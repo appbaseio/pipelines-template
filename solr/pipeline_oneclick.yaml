@@ -8,6 +8,10 @@ routes:
     method: POST
     classify:
       category: reactivesearch
+  - path: "/_fusion/_reactivesearch/validate"
+    method: POST
+    classify:
+      category: reactivesearch
 
 envs:
   FUSION_CREDS: ${{FUSION_CREDS}}
@@ -41,17 +45,28 @@ stages:
   - id: extract app and profile
     script: "function handleRequest() { const body = JSON.parse(context.request.body); const metadata = body.metadata; if (metadata == undefined || metadata.app == undefined || metadata.profile == undefined) { throw Error('`metadata.app` and`metadata.profile`are required fields!'); } return { fusionApp: metadata.app, fusionProfile: metadata.profile } }"
     continueOnError: false
+    trigger:
+      expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
   - id: extract fusion host and credentials
     script: 'function handleRequest() { return { "fusionHost": context.envs.FUSION_HOST, "fusionCreds": context.envs.FUSION_CREDS } }'
     continueOnError: false
+    trigger:
+      expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
   - id: rs
     use: reactivesearchQuery
     inputs:
       backend: solr
     continueOnError: false
+  - id: generate the query
+    scriptRef: generateQuery.js
+    continueOnError: false
+    trigger:
+      expression: "context.envs.path == '/_fusion/_reactivesearch/validate'"
   - id: solr_query
     use: solrQuery
     continueOnError: false
+    trigger:
+      expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
     inputs:
       protocol: http
       host: "{{fusionHost}}"
