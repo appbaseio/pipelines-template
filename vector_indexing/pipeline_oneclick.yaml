@@ -21,6 +21,10 @@ global_envs:
     key: VECTOR_FIELD_NAME
     description: "The field name of the field where the vector data will be stored in the index"
     value: "lyric_vector"
+  - label: Vector Field to Encode
+    key: VECTOR_TO_ENCODE
+    description: "The field that is to be encoded into vector"
+    value: "Lyric"
 
 stages:
   - id: authorize user

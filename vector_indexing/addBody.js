@@ -1,8 +1,10 @@
 function handleRequest() {
     const requestBody = JSON.parse(context.request.body);
 
+    const fieldToEncode = context.envs.VECTOR_TO_ENCODE
+
     return {
-        "lyricBody": getBody(requestBody.Lyric)
+        "lyricBody": getBody(requestBody[fieldToEncode])
     }
 }
 

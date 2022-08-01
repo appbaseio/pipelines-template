@@ -12,6 +12,7 @@ envs:
   bertURL: ${{ BERT_URL }}
   method: POST
   VECTOR_FIELD_NAME: "lyric_vector"
+  VECTOR_TO_ENCODE: "Lyric"
 
 stages:
   - id: authorize user
