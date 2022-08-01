@@ -1,7 +1,7 @@
 enabled: true
 description: Pipeline to show how to use cache and record analytics
 routes:
-  - path: good-books-ds-pipeline/_reactivesearch
+  - path: cache-and-analytics/_reactivesearch
     method: POST
     classify:
       category: reactivesearch
@@ -15,23 +15,6 @@ envs:
 
 stages:
   - use: authorization
-  - use: searchRelevancy
-    inputs:
-      search:
-        dataField:
-          - original_title
-        size: 1
-      suggestion:
-        dataField:
-          - original_title
-        enablePopularSuggestions: true
-        size: 3
-        popularSuggestionsConfig:
-          size: 1
-        enableRecentSuggestions: true
-        recentSuggestionsConfig:
-          size: 1
-    continueOnError: false
   - use: useCache
   - use: reactivesearchQuery
     continueOnError: false
