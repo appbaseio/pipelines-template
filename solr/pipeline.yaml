@@ -8,6 +8,10 @@ routes:
   method: POST
   classify:
     category: reactivesearch
+- path: "/_fusion/_reactivesearch/validate"
+  method: POST
+  classify:
+    category: reactivesearch
 
 envs:
   FUSION_CREDS: ${{FUSION_CREDS}}
@@ -42,17 +46,28 @@ stages:
 - id: extract app and profile
   scriptRef: 'extractMetadata.js'
   continueOnError: false
+  trigger:
+    expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
 - id: extract fusion host and credentials
   scriptRef: 'setEnvironment.js'
   continueOnError: false
+  trigger:
+    expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
 - id: rs
   use: reactivesearchQuery
   inputs:
     backend: solr
   continueOnError: false
+- id: generate the query
+  scriptRef: generateQuery.js
+  continueOnError: false
+  trigger:
+    expression: "context.envs.path == '/_fusion/_reactivesearch/validate'"
 - id: solr_query
   use: solrQuery
   continueOnError: false
+  trigger:
+    expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
   inputs:
     protocol: http
     host: "{{fusionHost}}"
