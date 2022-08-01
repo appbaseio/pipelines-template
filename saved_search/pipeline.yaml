@@ -9,8 +9,9 @@ envs:
   category: reactivesearch
   index:
     - test
-  saved_search_index: ${{ SAVED_SEARCH_INDEX }}
-  saved_search_credentials: ${{ SAVED_SEARCH_CREDENTIALS }}
+  save_search_URL: ${{ SAVED_SEARCH_URL }}
+  save_search_METHOD: "POST"
+  save_search_headers: "{\"Content-Type\": \"application/json\"}"
 
 stages:
   - use: authorization

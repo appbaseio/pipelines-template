@@ -8,8 +8,7 @@ This pipeline is similar to the basic pipeline with an extra step that saves the
 
 Following values need to be passed in the step `env` key while using the `pipelines-action`.
 
-- `SAVED_SEARCH_CREDENTIALS`: Credentials to hit ElasticSearch to save the search.
-- `SAVED_SEARCH_INDEX`: Index to save the search to
+- `SAVED_SEARCH_URL`: Index to save the search to
 
 They can be passed in the following way
 
@@ -20,11 +19,10 @@ They can be passed in the following way
     url: ${{secrets.APPBASEIOURL}}
     file: "./saved_search/pipeline.yaml"
   env:
-    SAVED_SEARCH_CREDENTIALS: ${{ secrets.SAVED_SEARCH_CREDENTIALS }}
-    SAVED_SEARCH_INDEX: test-index
+    SAVED_SEARCH_URL: ${{ secrets.SAVED_SEARCH_URL }}
 ```
 
-Note that the `SAVED_SEARCH_CREDENTIAL` is extracted from GitHub Secret. ([Read about GitHub Secrets here](https://docs.github.com/en/actions/security-guides/encrypted-secrets)):
+Note that the `SAVED_SEARCH_URL` is extracted from GitHub Secret. ([Read about GitHub Secrets here](https://docs.github.com/en/actions/security-guides/encrypted-secrets)):
 
 [Read more about passing envs to `pipelines-action` here](https://github.com/appbaseio/pipelines-action#environments)
 
