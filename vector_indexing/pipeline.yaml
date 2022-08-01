@@ -11,6 +11,7 @@ routes:
 envs:
   bertURL: ${{ BERT_URL }}
   method: POST
+  VECTOR_FIELD_NAME: "lyric_vector"
 
 stages:
   - id: authorize user

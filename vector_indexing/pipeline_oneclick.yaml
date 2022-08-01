@@ -17,6 +17,10 @@ global_envs:
     value: "https://demo-cas.jina.ai:8443"
     description: "Hosted URL to hit to encode a vector string, can use Jina's demo server: https://demo-cas.jina.ai:8443"
     label: "Bert API URL"
+  - label: Vector Field Name
+    key: VECTOR_FIELD_NAME
+    description: "The field name of the field where the vector data will be stored in the index"
+    value: "lyric_vector"
 
 stages:
   - id: authorize user
