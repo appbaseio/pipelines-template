@@ -16,6 +16,9 @@ routes:
 envs:
   bertURL: ${{ BERT_URL }}
   index: "lyrics-app-data"
+  NUM_CANDIDATES: 10000
+  NUM_K: 10
+  VECTOR_FIELD_NAME: "lyric_vector"
 
 stages:
   - id: authorize user

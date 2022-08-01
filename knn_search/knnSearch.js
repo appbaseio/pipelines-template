@@ -22,13 +22,17 @@ async function handleRequest() {
     }
     var esPathToPass = `/${context.envs.index}/_knn_search`;
 
+    fieldName = context.envs.VECTOR_FIELD_NAME;
+    kValue = context.envs.NUM_K;
+    numCandidates = context.envs.NUM_CANDIDATES;
+
     if (queryValue != undefined) {
         const vectoredValue = await getVectorForData(queryValue);
         esBodyToPass.knn = {
-            field: "lyric_vector",
+            field: fieldName,
             query_vector: vectoredValue,
-            k: 10,
-            num_candidates: 10000
+            k: kValue,
+            num_candidates: numCandidates
         }
     } else {
         esPathToPass = `/${context.envs.index}/_search`
