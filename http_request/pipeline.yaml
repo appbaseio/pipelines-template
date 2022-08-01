@@ -7,10 +7,6 @@ routes:
       category: reactivesearch
 
 stages:
-  - id: set_query
-    description: To extract the query key from request body
-    scriptRef: 'setQuery.js'
-    continueOnError: false
   - id: data_muse_api
     description: To get data from data muse api in asynchronous manner
     use: httpRequest
@@ -18,7 +14,7 @@ stages:
     inputs:
       url: https://api.datamuse.com/sug
       params:
-        s: "{{query}}"
+        s: "{{context.envs.query}}"
     continueOnError: false
   - use: reactivesearchQuery
     continueOnError: false
