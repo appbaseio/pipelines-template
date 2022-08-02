@@ -1,0 +1,87 @@
+{
+  "enabled": true,
+  "description": "kNN endpoint to search query in lyrics",
+  "routes": [
+    {
+      "path": "/knn_lyrics_app/_reactivesearch",
+      "method": "POST",
+      "classify": {
+        "category": "elasticsearch",
+        "acl": "search"
+      }
+    },
+    {
+      "path": "/knn_lyrics_app/_reactivesearch.v3",
+      "method": "POST",
+      "classify": {
+        "category": "elasticsearch",
+        "acl": "search"
+      }
+    }
+  ],
+  "envs": {
+    "bertURL": "${{ BERT_URL }}",
+    "index": "lyrics-app-data"
+  },
+  "global_envs": [
+    {
+      "key": "bertURL",
+      "value": "https://demo-cas.jina.ai:8443",
+      "description": "Hosted URL to hit to encode a vector string, can use Jina's demo server: https://demo-cas.jina.ai:8443",
+      "label": "Bert API URL"
+    },
+    {
+      "key": "VECTOR_FIELD_NAME",
+      "label": "Vector Field Name",
+      "description": "The field that contains the vector data in the document",
+      "value": "lyric_vector"
+    },
+    {
+      "key": "NUM_K",
+      "label": "Number of neighbors",
+      "description": "K is the number of neighbors against which the search will be made",
+      "value": 10
+    },
+    {
+      "key": "NUM_CANDIDATES",
+      "label": "Number of candidates",
+      "value": 10000,
+      "description": "Number of candidates"
+    }
+  ],
+  "stages": [
+    {
+      "id": "authorize user",
+      "use": "authorization"
+    },
+    {
+      "id": "kNN vectors",
+      "script": "async function handleRequest() { const requestBody = JSON.parse(context.request.body) if (requestBody.query == undefined || requestBody.query.length < 1) return {} var queryValue = undefined; requestBody.query.every(q => { if (q.value != undefined) { queryValue = q.value; return false; } return true; }) const includeFields = requestBody.query[0].includeFields const ids = requestBody.query.map(q => q.id); const esBodyToPass = { _source: { includes: includeFields } } var esPathToPass = `/${context.envs.index}/_knn_search`; if (queryValue != undefined) { const vectoredValue = await getVectorForData(queryValue); esBodyToPass.knn = { field: \"lyric_vector\", query_vector: vectoredValue, k: 10, num_candidates: 10000 } } else { esPathToPass = `/${context.envs.index}/_search` esBodyToPass.query = { match_all: {} } } return { esPath: esPathToPass, esBody: esBodyToPass, queryIds: ids } } async function getVectorForData(data) { const url = `${context.envs.bertURL}/post`; const response = await fetch(url, { method: \"POST\", headers: { \"Content-Type\": \"application/json\" }, body: JSON.stringify({ data: [{ text: data }], execEndpoint: \"/\" }) }); const jsonResponse = JSON.parse(response); return jsonResponse.data[0].embedding; }",
+      "async": true
+    },
+    {
+      "id": "determine search",
+      "script": "function handleRequest() { return { request: { ...context.request, body: JSON.stringify(context.esBody) }, } }",
+      "needs": [
+        "kNN search"
+      ]
+    },
+    {
+      "id": "es query",
+      "use": "elasticsearchQuery",
+      "inputs": {
+        "path": "{{esPath}}"
+      },
+      "needs": [
+        "determine search"
+      ]
+    },
+    {
+      "id": "update response",
+      "script": "function handleRequest() { const esResponse = JSON.parse(context.response.body); const builtResponse = {}; context.queryIds.forEach(qId => { builtResponse[qId] = esResponse; }) return { response: { ...context.response, body: JSON.stringify(builtResponse) } } }",
+      "needs": [
+        "es query"
+      ]
+    }
+  ]
+}

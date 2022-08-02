@@ -1,0 +1,41 @@
+{
+  "enabled": true,
+  "description": "Pipeline to show how to use cache and record analytics",
+  "routes": [
+    {
+      "path": "cache-and-analytics/_reactivesearch",
+      "method": "POST",
+      "classify": {
+        "category": "reactivesearch"
+      }
+    }
+  ],
+  "envs": {
+    "category": "reactivesearch",
+    "index": [
+      "good-books-ds-pipeline"
+    ],
+    "urlValues": {
+      "cache": true
+    }
+  },
+  "stages": [
+    {
+      "use": "authorization"
+    },
+    {
+      "use": "useCache"
+    },
+    {
+      "use": "reactivesearchQuery",
+      "continueOnError": false
+    },
+    {
+      "use": "elasticsearchQuery",
+      "continueOnError": false
+    },
+    {
+      "use": "recordAnalytics"
+    }
+  ]
+}

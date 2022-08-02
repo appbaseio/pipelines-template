@@ -1,0 +1,113 @@
+{
+    "enabled": true,
+    "routes": [
+        {
+            "path": "/_fusion/_reactivesearch",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        },
+        {
+            "path": "/_fusion/_reactivesearch.v3",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        },
+        {
+            "path": "/_fusion/_reactivesearch/validate",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "envs": {
+        "FUSION_CREDS": "${{FUSION_CREDS}}",
+        "FUSION_HOST": "${{FUSION_HOST_IP}}"
+    },
+    "global_envs": [
+        {
+            "label": "Fusion Host",
+            "description": "The IP address to the Fusion host along with the port",
+            "key": "FUSION_HOST",
+            "value": "",
+            "validate": {
+                "url": "${FUSION_HOST}",
+                "method": "GET",
+                "headers": {
+                    "Authorization": "`Basic ${btoa(${FUSION_CREDS})}`"
+                },
+                "expected_status": 200
+            }
+        },
+        {
+            "label": "Fusion Credentials",
+            "description": "The credentials to access the above fusion host.",
+            "key": "FUSION_CREDS",
+            "value": "",
+            "validate": {
+                "url": "${FUSION_HOST}",
+                "method": "GET",
+                "headers": {
+                    "Authorization": "`Basic ${btoa(${FUSION_CREDS})}`"
+                },
+                "expected_status": 200
+            }
+        }
+    ],
+    "stages": [
+        {
+            "id": "auth",
+            "use": "authorization"
+        },
+        {
+            "id": "extract app and profile",
+            "script": "function handleRequest() { const body = JSON.parse(context.request.body); const metadata = body.metadata; if (metadata == undefined || metadata.app == undefined || metadata.profile == undefined) { throw Error('`metadata.app` and`metadata.profile`are required fields!'); } return { fusionApp: metadata.app, fusionProfile: metadata.profile } }",
+            "continueOnError": false,
+            "trigger": {
+                "expression": "context.envs.path != '/_fusion/_reactivesearch/validate'"
+            }
+        },
+        {
+            "id": "extract fusion host and credentials",
+            "script": "function handleRequest() { return { \"fusionHost\": context.envs.FUSION_HOST, \"fusionCreds\": context.envs.FUSION_CREDS } }",
+            "continueOnError": false,
+            "trigger": {
+                "expression": "context.envs.path != '/_fusion/_reactivesearch/validate'"
+            }
+        },
+        {
+            "id": "rs",
+            "use": "reactivesearchQuery",
+            "inputs": {
+                "backend": "solr"
+            },
+            "continueOnError": false
+        },
+        {
+            "id": "generate the query",
+            "scriptRef": "generateQuery.js",
+            "continueOnError": false,
+            "trigger": {
+                "expression": "context.envs.path == '/_fusion/_reactivesearch/validate'"
+            }
+        },
+        {
+            "id": "solr_query",
+            "use": "solrQuery",
+            "continueOnError": false,
+            "trigger": {
+                "expression": "context.envs.path != '/_fusion/_reactivesearch/validate'"
+            },
+            "inputs": {
+                "protocol": "http",
+                "host": "{{fusionHost}}",
+                "app": "{{fusionApp}}",
+                "profile": "{{fusionProfile}}",
+                "credentials": "{{fusionCreds}}"
+            }
+        }
+    ]
+}

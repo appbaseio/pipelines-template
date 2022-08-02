@@ -1,0 +1,65 @@
+{
+    "enabled": true,
+    "description": "Pipeline to save search to an Elasticsearch index",
+    "routes": [
+        {
+            "path": "/saved-search/_reactivesearch",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "envs": {
+        "category": "reactivesearch",
+        "index": [
+            "test"
+        ],
+        "save_search_URL": "${{ SAVED_SEARCH_URL }}",
+        "save_search_METHOD": "POST",
+        "save_search_headers": "{\"Content-Type\": \"application/json\"}"
+    },
+    "global_envs": [
+        {
+            "key": "save_search_URL",
+            "label": "Save Search URL",
+            "description": "URL to send the save search request to",
+            "value": ""
+        },
+        {
+            "key": "save_search_METHOD",
+            "label": "Save Search Method",
+            "description": "Method to hit the save search request with",
+            "value": ""
+        },
+        {
+            "key": "save_search_HEADERS",
+            "label": "Save Search Headers",
+            "description": "Headers to use while sending save search request. This should be a stringified JSON.",
+            "value": ""
+        }
+    ],
+    "stages": [
+        {
+            "use": "authorization"
+        },
+        {
+            "id": "modify_request",
+            "script": "function handleRequest() { const reqBody = JSON.parse(context.request.body); return { request: { ...context.request, body: JSON.stringify({ ...reqBody, query: [...reqBody.query, { id: 'search2' }] }) } }; }"
+        },
+        {
+            "id": "save_search",
+            "async": true,
+            "scriptRef": "saveSearch.js"
+        },
+        {
+            "use": "reactivesearchQuery",
+            "needs": [
+                "save_search"
+            ]
+        },
+        {
+            "use": "elasticsearchQuery"
+        }
+    ]
+}

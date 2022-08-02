@@ -2,7 +2,7 @@
 
 This pipeline explains how MongoDB can be used as a search backend with ReactiveSearch. MongoDB is compatible with all the other search relevancy features of ReactiveSearch.
 
-[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/mongodb/pipeline_oneclick.yaml)
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/mongodb/pipeline_oneclick.json)
 
 ## Envs
 

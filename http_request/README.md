@@ -2,7 +2,7 @@
 
 This pipeline shows the usage of `httpRequest` pre-built stage by utilizing in the pipeline.
 
-[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/http_request/pipeline_oneclick.yaml)
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/http_request/pipeline_oneclick.json)
 
 ## Set Query
 
