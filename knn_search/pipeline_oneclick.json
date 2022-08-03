@@ -20,10 +20,15 @@
     }
   ],
   "envs": {
-    "bertURL": "${{ BERT_URL }}",
-    "index": "lyrics-app-data"
+    "bertURL": "${{ BERT_URL }}"
   },
   "global_envs": [
+    {
+      "key": "index",
+      "value": "lyrics-app-data",
+      "description": "Index where kNN search is run against",
+      "label": "kNN search index"
+    },
     {
       "key": "bertURL",
       "value": "https://demo-cas.jina.ai:8443",
