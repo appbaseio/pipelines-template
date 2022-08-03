@@ -1,43 +1,43 @@
 enabled: true
 routes:
-- path: "/_fusion/_reactivesearch"
+- path: "/_solr/_reactivesearch"
   method: POST
   classify:
     category: reactivesearch
-- path: "/_fusion/_reactivesearch.v3"
+- path: "/_solr/_reactivesearch.v3"
   method: POST
   classify:
     category: reactivesearch
-- path: "/_fusion/_reactivesearch/validate"
+- path: "/_solr/_reactivesearch/validate"
   method: POST
   classify:
     category: reactivesearch
 
 envs:
-  FUSION_CREDS: ${{FUSION_CREDS}}
-  FUSION_HOST: ${{FUSION_HOST_IP}}
+  SOLR_CREDS: ${{SOLR_CREDS}}
+  SOLR_HOST: ${{SOLR_HOST_IP}}
 
 
 global_envs:
-  - label: Fusion Host
-    description: The IP address to the Fusion host along with the port
-    key: FUSION_HOST
+  - label: Solr Host
+    description: The IP address to the Solr host along with the port
+    key: SOLR_HOST
     value: ""
     validate:
-      url: ${FUSION_HOST}
+      url: ${SOLR_HOST}
       method: GET
       headers:
-        Authorization: "`Basic ${btoa(${FUSION_CREDS})}`"
+        Authorization: "`Basic ${btoa(${SOLR_CREDS})}`"
       expected_status: 200
-  - label: Fusion Credentials
-    description: The credentials to access the above fusion host.
-    key: FUSION_CREDS
+  - label: Solr Credentials
+    description: The credentials to access the above Solr host.
+    key: SOLR_CREDS
     value: ""
     validate:
-      url: ${FUSION_HOST}
+      url: ${SOLR_HOST}
       method: GET
       headers:
-        Authorization: "`Basic ${btoa(${FUSION_CREDS})}`"
+        Authorization: "`Basic ${btoa(${SOLR_CREDS})}`"
       expected_status: 200
 
 stages:
@@ -47,12 +47,12 @@ stages:
   scriptRef: 'extractMetadata.js'
   continueOnError: false
   trigger:
-    expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
-- id: extract fusion host and credentials
+    expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
+- id: extract solr host and credentials
   scriptRef: 'setEnvironment.js'
   continueOnError: false
   trigger:
-    expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
+    expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
 - id: rs
   use: reactivesearchQuery
   inputs:
@@ -62,15 +62,15 @@ stages:
   scriptRef: generateQuery.js
   continueOnError: false
   trigger:
-    expression: "context.envs.path == '/_fusion/_reactivesearch/validate'"
+    expression: "context.envs.path == '/_solr/_reactivesearch/validate'"
 - id: solr_query
   use: solrQuery
   continueOnError: false
   trigger:
-    expression: "context.envs.path != '/_fusion/_reactivesearch/validate'"
+    expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
   inputs:
     protocol: http
-    host: "{{fusionHost}}"
-    app: "{{fusionApp}}"
-    profile: "{{fusionProfile}}"
-    credentials: "{{fusionCreds}}"
+    host: "{{solrHost}}"
+    app: "{{solrApp}}"
+    profile: "{{solrProfile}}"
+    credentials: "{{solrCreds}}"

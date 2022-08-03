@@ -1,6 +1,6 @@
 function handleRequest() {
     return {
-        "fusionHost": context.envs.FUSION_HOST,
-        "fusionCreds": context.envs.FUSION_CREDS
+        "solrHost": context.envs.SOLR_HOST,
+        "solrCreds": context.envs.SOLR_CREDS
     }
 }
