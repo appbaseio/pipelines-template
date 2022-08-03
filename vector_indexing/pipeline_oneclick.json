@@ -23,6 +23,17 @@
             "label": "Bert API URL"
         },
         {
+            "key": "ES_URL",
+            "value": "",
+            "description": "The ElasticSearch URL to run ES requests to",
+            "label": "ElasticSearch URL",
+            "validate": {
+                "url": "${ES_URL}",
+                "method": "GET",
+                "expected_status": 200
+            }
+        },
+        {
             "label": "Vector Field Name",
             "key": "VECTOR_FIELD_NAME",
             "description": "The field name of the field where the vector data will be stored in the index",
@@ -71,7 +82,10 @@
             "use": "elasticsearchQuery",
             "needs": [
                 "merge vector"
-            ]
+            ],
+            "inputs": {
+                "url": "${ES_URL}"
+            }
         }
     ]
 }

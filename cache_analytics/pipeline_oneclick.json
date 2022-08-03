@@ -19,6 +19,19 @@
       "cache": true
     }
   },
+  "global_envs": [
+    {
+      "key": "ES_URL",
+      "value": "",
+      "description": "The ElasticSearch URL to run ES requests to",
+      "label": "ElasticSearch URL",
+      "validate": {
+        "url": "${ES_URL}",
+        "method": "GET",
+        "expected_status": 200
+      }
+    }
+  ],
   "stages": [
     {
       "use": "authorization"
@@ -32,7 +45,10 @@
     },
     {
       "use": "elasticsearchQuery",
-      "continueOnError": false
+      "continueOnError": false,
+      "inputs": {
+        "url": "${ES_URL}"
+      }
     },
     {
       "use": "recordAnalytics"

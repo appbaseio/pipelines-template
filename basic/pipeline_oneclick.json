@@ -10,6 +10,19 @@
             }
         }
     ],
+    "global_envs": [
+        {
+            "key": "ES_URL",
+            "value": "",
+            "description": "The ElasticSearch URL to run ES requests to",
+            "label": "ElasticSearch URL",
+            "validate": {
+                "url": "${ES_URL}",
+                "method": "GET",
+                "expected_status": 200
+            }
+        }
+    ],
     "stages": [
         {
             "id": "auth",
@@ -26,7 +39,10 @@
         {
             "id": "es_query",
             "use": "elasticsearchQuery",
-            "async": true
+            "async": true,
+            "inputs": {
+                "url": "${ES_URL}"
+            }
         }
     ]
 }

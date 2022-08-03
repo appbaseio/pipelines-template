@@ -30,6 +30,17 @@
       "label": "kNN search index"
     },
     {
+      "key": "ES_URL",
+      "value": "",
+      "description": "The ElasticSearch URL to run ES requests to",
+      "label": "ElasticSearch URL",
+      "validate": {
+        "url": "${ES_URL}",
+        "method": "GET",
+        "expected_status": 200
+      }
+    },
+    {
       "key": "bertURL",
       "value": "https://demo-cas.jina.ai:8443",
       "description": "Hosted URL to hit to encode a vector string, can use Jina's demo server: https://demo-cas.jina.ai:8443",
@@ -75,7 +86,8 @@
       "id": "es query",
       "use": "elasticsearchQuery",
       "inputs": {
-        "path": "{{esPath}}"
+        "path": "{{esPath}}",
+        "url": "${ES_URL}"
       },
       "needs": [
         "determine search"
