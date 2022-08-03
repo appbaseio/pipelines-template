@@ -2,12 +2,12 @@ enabled: true
 description: kNN endpoint to search query in lyrics
 
 routes:
-  - path: /knn_lyrics_app/_reactivesearch
+  - path: /knn_search/_reactivesearch
     method: POST
     classify:
       category: elasticsearch
       acl: search
-  - path: /knn_lyrics_app/_reactivesearch.v3
+  - path: /knn_search/_reactivesearch.v3
     method: POST
     classify:
       category: elasticsearch
