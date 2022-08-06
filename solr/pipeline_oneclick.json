@@ -25,7 +25,8 @@
     ],
     "envs": {
         "SOLR_CREDS": "${{SOLR_CREDS}}",
-        "SOLR_HOST": "${{SOLR_HOST_IP}}"
+        "SOLR_HOST": "${{SOLR_HOST_IP}}",
+        "protocol": "http"
     },
     "global_envs": [
         {
@@ -88,11 +89,15 @@
         },
         {
             "id": "generate the query",
-            "scriptRef": "generateQuery.js",
+            "script": "function handleRequest() { const queries = JSON.parse(context.request.body); const URL = `${context.envs.protocol}://${context.envs.solrHost}/api/apps/${context.solrApp}/query/${context.solrProfile}`; var headers = { Authorization: `Basic ${btoa(context.envs.solrCreds)}` }; const BLACKLISTED_HEADERS = ['Authorization']; for (var key in BLACKLISTED_HEADERS) { if (key in headers) { delete headers[key]; } } var generatedURIs = {}; var validateResponse = []; for (var key of Object.keys(queries)) { const queryEach = queries[key]; const generatedEach = { original: JSON.parse(queryEach['_original']) }; delete queryEach['_original']; const isEndpoint = queryEach['_isEndpoint'] == 'true'; if (!isEndpoint) { generatedURIs[key] = generatedEach; generatedEach['built'] = '?' + Object.keys(queryEach) .reduce(function (a, k) { a.push(k + '=' + encodeURIComponent(queryEach[k])); return a; }, []) .join('&'); const finalURL = URL + generatedEach['built']; validateResponse.push({ id: key, endpoint: { url: finalURL, method: 'GET', headers: headers, body: {}, }, }); } else { validateResponse.push({ id: queryEach['id'], endpoint: queryEach['endpoint'], }); } } return { response: { body: JSON.stringify(validateResponse), code: 200 } }; }",
             "continueOnError": false,
             "trigger": {
                 "expression": "context.envs.path == '/_solr/_reactivesearch/validate'"
-            }
+            },
+            "needs": [
+                "extract solr host and credentials",
+                "extract app and profile"
+            ]
         },
         {
             "id": "solr_query",
@@ -102,12 +107,16 @@
                 "expression": "context.envs.path != '/_solr/_reactivesearch/validate'"
             },
             "inputs": {
-                "protocol": "http",
+                "protocol": "{{protocol}}",
                 "host": "{{solrHost}}",
                 "app": "{{solrApp}}",
                 "profile": "{{solrProfile}}",
                 "credentials": "{{solrCreds}}"
-            }
+            },
+            "needs": [
+                "extract solr host and credentials",
+                "extract app and profile"
+            ]
         }
     ]
 }
