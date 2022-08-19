@@ -134,15 +134,15 @@ async function validatePipeline() {
     console.log("pipeline file parsed successfully!")
 
     // Parse the validator file
-    var validatorContent = null
+    var validatorObj = null
     try {
-        validatorContent = parseValidator(pathToValidateFile)
+        validatorObj = parseValidator(pathToValidateFile)
     } catch (err) {
         console.error("error while parsing validator file: ", err)
         return
     }
 
-    if (validatorContent == null) {
+    if (validatorObj == null) {
         console.error("no content present in the passed validator file!")
         return
     }
