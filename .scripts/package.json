@@ -1,0 +1,11 @@
+{
+  "name": "pipeline-validator",
+  "version": "1.0.0",
+  "description": "Validate ReactiveSearch Pipelines",
+  "main": "index.js",
+  "author": "deepjyoti30",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.2.10"
+  }
+}
