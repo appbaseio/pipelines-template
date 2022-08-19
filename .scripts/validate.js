@@ -60,6 +60,36 @@ function parsePipelineFile(pipelinePath) {
 }
 
 
+function parseValidator(validatorPath) {
+    /**
+     * Parse the validator file and return the parsed contents
+     * properly.
+     * 
+     * This function will verify that the file actually exists
+     * before the file is imported.
+     * 
+     * @param {string} validatorPath Path to the validator file
+     * 
+     * @returns {Object} parsed validator object with details about
+     * validating the pipeline
+     */
+
+    // Check if the extension is JSON
+    if (validatorPath.toLower().split(".").pop() != "json") {
+        throw Error("invalid pipeline path passed: file is non JSON")
+    }
+
+    if (!fs.existsSync(validatorPath)) {
+        throw Error("invalid validator path passed: does not exist!")
+    }
+
+    // Parse the file since it exists.
+    let fileContent = fs.readFileSync(validatorPath);
+    let parsedJSONContent = JSON.parse(fileContent);
+    return parsedJSONContent;
+}
+
+
 async function validatePipeline() {
     /**
      * Validate the pipeline and take care of everything
@@ -103,6 +133,20 @@ async function validatePipeline() {
 
     console.log("pipeline file parsed successfully!")
 
-    // TODO: Parse the validator file
+    // Parse the validator file
+    var validatorContent = null
+    try {
+        validatorContent = parseValidator(pathToValidateFile)
+    } catch (err) {
+        console.error("error while parsing validator file: ", err)
+        return
+    }
+
+    if (validatorContent == null) {
+        console.error("no content present in the passed validator file!")
+        return
+    }
+
+    console.log("validator file parsed successfully!")
 
 }
