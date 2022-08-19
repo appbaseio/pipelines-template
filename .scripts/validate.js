@@ -90,6 +90,18 @@ function parseValidator(validatorPath) {
 }
 
 
+function hitValidatePipeline(pipelineBody, request) {
+    /**
+     * Hit the `/validate` endpoint of the passed upstream
+     * with the pipeline content and the `request` as a form
+     * value.
+     * 
+     * @param {string} pipelineBody Pipeline body as stringified JSON
+     * @param {Object} request Request with `headers` and `body` nested inside.
+     */
+}
+
+
 async function validatePipeline() {
     /**
      * Validate the pipeline and take care of everything
