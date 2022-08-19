@@ -7,7 +7,8 @@
  * should be the validation details for that particular pipeline.
  */
 import fetch from "node-fetch";
-const fs = require('fs')
+const fs = require('fs');
+var FormData = require("form-data");
 
 import { config } from "./config.js";
 
@@ -90,15 +91,32 @@ function parseValidator(validatorPath) {
 }
 
 
-function hitValidatePipeline(pipelineBody, request) {
+async function hitValidatePipeline(pipelineBody, request, appbaseURL) {
     /**
-     * Hit the `/validate` endpoint of the passed upstream
+     * Hit the `/_pipeline/validate` endpoint of the passed upstream
      * with the pipeline content and the `request` as a form
      * value.
      * 
      * @param {string} pipelineBody Pipeline body as stringified JSON
      * @param {Object} request Request with `headers` and `body` nested inside.
+     * @param {string} appbaseURL APPBASE_URL to hit to validate the pipeline.
+     * 
+     * @returns {Response} Response received from the validate endpoint.
      */
+    const formToSend = new FormData();
+
+    // Add the pipeline body
+    formToSend.append("pipeline", pipelineBody);
+
+    // Add the request body as a stringified JSON
+    formToSend.append("request", JSON.stringify(request));
+
+    const validateResponse = await fetch(`${appbaseURL}/_pipeline/validate`, {
+        method: "POST",
+        body: formToSend
+    });
+
+    return validateResponse;
 }
 
 
@@ -159,6 +177,11 @@ async function validatePipeline() {
         return
     }
 
-    console.log("validator file parsed successfully!")
+    console.log("validator file parsed successfully!");
+
+    const validateResponse = await hitValidatePipeline(pipelineContent, validatorObj.request, appbaseURL);
+
+    // TODO: Check the response code of the response and accordingly verify based on the details
+    // specified in the validator object passed.
 
 }
