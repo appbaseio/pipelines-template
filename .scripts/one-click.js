@@ -59,6 +59,29 @@ function handleOneClickGeneration() {
             throw new Error("invalid file passed: only `.json` and `.yaml` files are accepted as pipelines.")
     }
 
+    // NOTE: Should not happen but in case parsedContent is null, just
+    // keep a check to throw an error and not continue.
+    if (parsedPipelineContent == null) {
+        throw new Error("could not parse pipeline file content");
+    }
+
+    // NOTE: Ideally a pipeline that is a template **will** have at-least
+    // one stage defined but there can be a case when a stage is not passed.
+    //
+    // In such a case, it will be denied by the backend but for the sanity
+    // of the current JS code, we will throw an error here itself.
+    if (!Object.keys(parsedPipelineContent).includes("stages") || parsedPipelineContent.stages.length < 1) {
+        throw new Error("pipeline content is invalid: at least one stage needs to be present");
+    }
+
     // Iterate the pipeline stages since no other thing requires parsing
     // and then resolve any scriptRefs if present.
+    parsedPipelineContent.stages.forEach((element, index) => {
+        // Check if `scriptRef` is present and accordingly replace
+        // it if it is present by resolving it.
+        if (!Object.keys(element).includes("scriptRef")) return;
+
+        // TODO: It is present, so try to replace it now.
+    });
+
 }
