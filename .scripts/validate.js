@@ -32,9 +32,9 @@ async function checkUpstreamActive(appbaseURL, appbaseCREDS) {
         headers: {
             "Authorization": `basic ${credentials}`
         }
-    })
+    });
 
-    return response.statusCode == 200;
+    return response.status == 200;
 }
 
 
@@ -151,7 +151,7 @@ function verifyResponse(validatorObject, validateResponse) {
 
     // Verify the status code based on the response.
     test("response status code match", () => {
-        expect(validateResponse.statusCode).toBe(validatorObject.matchCriteriaStatus);
+        expect(validateResponse.status).toBe(validatorObject.matchCriteriaStatus);
     });
 
     // Parse the response into an object
