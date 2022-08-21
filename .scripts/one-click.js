@@ -75,7 +75,7 @@ function handleOneClickGeneration() {
         return
     }
 
-    var pathToPipeline = argsPassed[0];
+    var pipelinePath = argsPassed[0];
 
     // Check if the file exists and throw error if it doesn't.
     if (!fs.existsSync(pipelinePath)) {
@@ -84,8 +84,7 @@ function handleOneClickGeneration() {
 
     // The pipeline file will be accepted as a JSON as well. If it is
     // an YAML, that will be converted to a JSON and then worked on.
-    fileExtension = pathToPipeline.toLowerCase().split(".").pop();
-
+    const fileExtension = pipelinePath.toLowerCase().split(".").pop();
     var parsedPipelineContent = null;
 
     switch (fileExtension) {
@@ -136,7 +135,7 @@ function handleOneClickGeneration() {
     // with formatting.
     //
     // Name of the file will have `_oneclick` appended to it.
-    const updatedPipelineName = path.basename(pipelinePath, fileExtension) + "_oneclick.json";
+    const updatedPipelineName = path.basename(pipelinePath, "." + fileExtension) + "_oneclick.json";
     const finalPipelinePath = path.resolve(path.dirname(pipelinePath), updatedPipelineName);
 
     const contentToWrite = JSON.stringify(parsedPipelineContent, null, 4);
