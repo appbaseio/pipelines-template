@@ -120,6 +120,57 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL) {
 }
 
 
+function verifyResponse(validatorObject, validateResponse) {
+    /**
+     * Take care of verifying the response based on the user
+     * specification as passed in the validation file.
+     * 
+     * @param {Object} validatorObject Validator object to get user
+     * provided validation details from.
+     * @param {Response} validateResponse Response received from the
+     * validate endpoint.
+     */
+
+    // If the `matchCriteriaStatus` is not passed, set it to 200.
+    if (!Object.keys(validatorObject).includes("matchCriteriaStatus") || validatorObject.matchCriteriaStatus == "") {
+        // Add the status as 200.
+        validatorObject.matchCriteriaStatus = 200;
+    }
+
+    // TODO: Verify the status code based on the response.
+
+    // Parse the response into an object
+    responseObject = JSON.parse(validateResponse)
+
+    // If `matchCriteriaPath` is passed, then we need to extract the value
+    // for that key from the response and verify that, else use the whole response
+    // JSON as a whole.
+    if (!Object.keys(validatorObject).includes("matchCriteriaPath") || validatorObject.matchCriteriaPath == "") {
+        // Extract the value
+        // We need to split the passed key using `dot` and use the keys dynamically
+        // to extract the name.
+        keySplitted = validatorObject.matchCriteriaPath.split(".")
+
+        eachValue = responseObject
+        keySplitted.forEach(key => {
+            if (eachValue == undefined) {
+                // Throw an error
+                throw Error(`error while extracting the value for 'matchCriteriaPath'. 'undefined' found at: ${key}`);
+            }
+
+            eachValue = eachValue[key];
+        });
+
+        // Set the `eachValue` as the responseObject
+        responseObject = eachValue
+    }
+
+    // TODO: Verify the response object against the response passed in
+    // the validator object.
+
+}
+
+
 async function validatePipeline() {
     /**
      * Validate the pipeline and take care of everything
@@ -183,5 +234,4 @@ async function validatePipeline() {
 
     // TODO: Check the response code of the response and accordingly verify based on the details
     // specified in the validator object passed.
-
 }
