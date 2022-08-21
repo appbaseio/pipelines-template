@@ -9,6 +9,7 @@
 import fetch from "node-fetch";
 const fs = require('fs');
 var FormData = require("form-data");
+import { test, expect } from "@jest/globals";
 
 import { config } from "./config.js";
 
@@ -137,7 +138,10 @@ function verifyResponse(validatorObject, validateResponse) {
         validatorObject.matchCriteriaStatus = 200;
     }
 
-    // TODO: Verify the status code based on the response.
+    // Verify the status code based on the response.
+    test("response status code match", () => {
+        expect(validateResponse.statusCode).toBe(validatorObject.matchCriteriaStatus);
+    });
 
     // Parse the response into an object
     responseObject = JSON.parse(validateResponse)
@@ -165,9 +169,11 @@ function verifyResponse(validatorObject, validateResponse) {
         responseObject = eachValue
     }
 
-    // TODO: Verify the response object against the response passed in
+    // Verify the response object against the response passed in
     // the validator object.
-
+    test("response body match", () => {
+        expect(validatorObject.response).toMatchObject(responseObject);
+    })
 }
 
 
