@@ -238,6 +238,12 @@ async function validatePipeline() {
 
     const validateResponse = await hitValidatePipeline(pipelineContent, validatorObj.request, appbaseURL);
 
-    // TODO: Check the response code of the response and accordingly verify based on the details
+    // Check the response code of the response and accordingly verify based on the details
     // specified in the validator object passed.
+    verifyResponse(validatorObj, validateResponse);
 }
+
+
+(async () => {
+    validatePipeline();
+})()
