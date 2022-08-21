@@ -13,7 +13,7 @@ const { test, expect } = global;
 
 import config from "./config.js";
 
-async function checkUpstreamActive(appbaseURL) {
+async function checkUpstreamActive(appbaseURL, appbaseCREDS) {
     /**
      * Check whether or not the APPBASE_URL passed
      * is active by hitting the `/arc/_health` endpoint.
@@ -21,11 +21,18 @@ async function checkUpstreamActive(appbaseURL) {
      * @param {string} appbaseURL APPBASE_URL to verify whether or not
      * it is active.
      * 
+     * @param {string} appbaseCREDS Credentials in the form of username:password
+     * 
      * @returns {Boolean} Indicates whether or not upstream is active
      */
-    URLtoHit = `${appbaseURL}/arc/_health`
+    const URLtoHit = `${appbaseURL}/arc/_health`
+    const credentials = btoa(appbaseCREDS)
 
-    response = await fetch(URLtoHit)
+    response = await fetch(URLtoHit, {
+        headers: {
+            "Authorization": `basic ${credentials}`
+        }
+    })
 
     return response.statusCode == 200;
 }
@@ -92,7 +99,7 @@ function parseValidator(validatorPath) {
 }
 
 
-async function hitValidatePipeline(pipelineBody, request, appbaseURL) {
+async function hitValidatePipeline(pipelineBody, request, appbaseURL, appbaseCREDS) {
     /**
      * Hit the `/_pipeline/validate` endpoint of the passed upstream
      * with the pipeline content and the `request` as a form
@@ -101,6 +108,7 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL) {
      * @param {string} pipelineBody Pipeline body as stringified JSON
      * @param {Object} request Request with `headers` and `body` nested inside.
      * @param {string} appbaseURL APPBASE_URL to hit to validate the pipeline.
+     * @param {string} appbaseCREDS Credentials to hit appbase URL
      * 
      * @returns {Response} Response received from the validate endpoint.
      */
@@ -114,7 +122,10 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL) {
 
     const validateResponse = await fetch(`${appbaseURL}/_pipeline/validate`, {
         method: "POST",
-        body: formToSend
+        body: formToSend,
+        headers: {
+            "Authorization": `Basic ${btoa(appbaseCREDS)}`
+        }
     });
 
     return validateResponse;
@@ -189,14 +200,15 @@ async function validatePipeline() {
         return
     }
 
-    pathToPipeline = argsPassed[0];
-    pathToValidateFile = argsPassed[1];
+    var pathToPipeline = argsPassed[0];
+    var pathToValidateFile = argsPassed[1];
 
     // Parse the configuration to extract the APPBASE_URL
-    appbaseURL = config.APPBASE_URL
+    var appbaseURL = config.APPBASE_URL
+    var appbaseCREDS = config.CREDENTIALS
 
     // Verify that upstream is active
-    isUpstreamActive = await checkUpstreamActive(appbaseURL)
+    var isUpstreamActive = await checkUpstreamActive(appbaseURL, appbaseCREDS)
     if (!isUpstreamActive) {
         console.error("upstream is not active, `/arc/_health` returned a non OK status code!")
         return
@@ -236,7 +248,7 @@ async function validatePipeline() {
 
     console.log("validator file parsed successfully!");
 
-    const validateResponse = await hitValidatePipeline(pipelineContent, validatorObj.request, appbaseURL);
+    const validateResponse = await hitValidatePipeline(pipelineContent, validatorObj.request, appbaseURL, appbaseCREDS);
 
     // Check the response code of the response and accordingly verify based on the details
     // specified in the validator object passed.
