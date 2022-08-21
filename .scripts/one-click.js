@@ -143,3 +143,5 @@ function handleOneClickGeneration() {
     fs.writeFileSync(finalPipelinePath, contentToWrite);
     console.log("One-Click pipeline created successfully!");
 }
+
+handleOneClickGeneration();
