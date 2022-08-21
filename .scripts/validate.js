@@ -8,8 +8,8 @@
  */
 import fetch from "node-fetch";
 import * as fs from "fs";
-import * as FormData from "form-data";
-const { test, expect } = global;
+import { default as FormData } from "form-data";
+const { test } = global;
 
 import config from "./config.js";
 
