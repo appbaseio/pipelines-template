@@ -7,8 +7,8 @@
  * should be the validation details for that particular pipeline.
  */
 import fetch from "node-fetch";
-const fs = import('fs');
-var FormData = import("form-data");
+import * as fs from "fs";
+import * as FormData from "form-data";
 const { test, expect } = global;
 
 import config from "./config.js";
@@ -54,7 +54,7 @@ function parsePipelineFile(pipelinePath) {
      */
 
     // Check if the extension is JSON
-    if (pipelinePath.toLower().split(".").pop() != "json") {
+    if (pipelinePath.toLowerCase().split(".").pop() != "json") {
         throw Error("invalid pipeline path passed: file is non JSON")
     }
 
@@ -84,7 +84,7 @@ function parseValidator(validatorPath) {
      */
 
     // Check if the extension is JSON
-    if (validatorPath.toLower().split(".").pop() != "json") {
+    if (validatorPath.toLowerCase().split(".").pop() != "json") {
         throw Error("invalid pipeline path passed: file is non JSON")
     }
 
