@@ -1,3 +1,5 @@
-export default config = {
+const config = {
     APPBASE_URL: ""
 }
+
+export default config;

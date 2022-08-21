@@ -7,11 +7,11 @@
  * should be the validation details for that particular pipeline.
  */
 import fetch from "node-fetch";
-const fs = require('fs');
-var FormData = require("form-data");
-import { test, expect } from "@jest/globals";
+const fs = import('fs');
+var FormData = import("form-data");
+const { test, expect } = global;
 
-import { config } from "./config.js";
+import config from "./config.js";
 
 async function checkUpstreamActive(appbaseURL) {
     /**
