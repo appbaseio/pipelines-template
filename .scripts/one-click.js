@@ -132,4 +132,14 @@ function handleOneClickGeneration() {
         parsedPipelineContent.stages[index] = element;
     });
 
+    // Now that all scriptRefs are resolved, we can write the JSON to a file
+    // with formatting.
+    //
+    // Name of the file will have `_oneclick` appended to it.
+    const updatedPipelineName = path.basename(pipelinePath, fileExtension) + "_oneclick.json";
+    const finalPipelinePath = path.resolve(path.dirname(pipelinePath), updatedPipelineName);
+
+    const contentToWrite = JSON.stringify(parsedPipelineContent, null, 4);
+    fs.writeFileSync(finalPipelinePath, contentToWrite);
+    console.log("One-Click pipeline created successfully!");
 }
