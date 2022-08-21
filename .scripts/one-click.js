@@ -7,6 +7,7 @@
  */
 
 import * as fs from "fs";
+import * as yaml from "js-yaml";
 
 
 function handleOneClickGeneration() {
@@ -51,9 +52,13 @@ function handleOneClickGeneration() {
             parsedPipelineContent = JSON.parse(fileContent);
             break;
         case "yaml":
-            // TODO: Parse into JSON
+            // Parse the yaml into JSON
+            parsedPipelineContent = yaml.load(fs.readFileSync(pipelinePath, "utf-8"));
             break;
         default:
             throw new Error("invalid file passed: only `.json` and `.yaml` files are accepted as pipelines.")
     }
+
+    // Iterate the pipeline stages since no other thing requires parsing
+    // and then resolve any scriptRefs if present.
 }
