@@ -26,9 +26,9 @@ async function checkUpstreamActive(appbaseURL, appbaseCREDS) {
      * @returns {Boolean} Indicates whether or not upstream is active
      */
     const URLtoHit = `${appbaseURL}/arc/_health`
-    const credentials = btoa(appbaseCREDS)
+    const credentials = Buffer.from(appbaseCREDS).toString("base64");
 
-    response = await fetch(URLtoHit, {
+    const response = await fetch(URLtoHit, {
         headers: {
             "Authorization": `basic ${credentials}`
         }
@@ -124,7 +124,7 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL, appbaseCRE
         method: "POST",
         body: formToSend,
         headers: {
-            "Authorization": `Basic ${btoa(appbaseCREDS)}`
+            "Authorization": `Basic ${Buffer.from(appbaseCREDS).toString("base64")}`
         }
     });
 
