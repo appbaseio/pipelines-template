@@ -8,6 +8,49 @@
 
 import * as fs from "fs";
 import * as yaml from "js-yaml";
+import * as path from "path";
+
+
+function addSlashes(str) {
+    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+}
+
+
+function parseScriptRefToOneLine(scriptRef, pipelinePath) {
+    /**
+     * Parse the scriptRef file passed into a single line
+     * JS.
+     * 
+     * This function will take care of throwing an error in
+     * case the scriptRef passed is not present in the current
+     * directory.
+     * 
+     * This function will also parse the base directory
+     * from the pipelinePath passed. Idea is that if the pipeline
+     * path passed is: `a/b/c.js` then `b` is the base directory
+     * and `c.js` is the pipeline file.
+     * 
+     * NOTE: A sane assumption in this function is that the scriptRef
+     * path defined will always be relative to the directory where
+     * the pipeline is present in.
+     * 
+     * @param {string} scriptRef scriptRef to resolve into a one-liner.
+     * @param {string} pipelinePath path to the pipeline file.
+     * 
+     * @returns {string} scriptRef resolved to a single-line JS string.
+     */
+    const pipelineDirectory = path.dirname(pipelinePath);
+    const scriptRefPath = path.resolve(pipelineDirectory, scriptRef);
+
+    // Check if the file exists, else throw an error.
+    if (!fs.existsSync(scriptRefPath)) {
+        throw new Error(`scriptRef passed with path '${scriptRefPath}' does not exist`);
+    }
+
+    let scriptRefContent = fs.readFileSync(scriptRefPath);
+    const escapedContent = addSlashes(scriptRefContent);
+    return escapedContent;
+}
 
 
 function handleOneClickGeneration() {
@@ -81,7 +124,12 @@ function handleOneClickGeneration() {
         // it if it is present by resolving it.
         if (!Object.keys(element).includes("scriptRef")) return;
 
-        // TODO: It is present, so try to replace it now.
+        // It is present, so try to replace it now.
+        const script = parseScriptRefToOneLine(element.scriptRef, pipelinePath);
+        element.script = script;
+        delete element["scriptRef"];
+
+        parsedPipelineContent.stages[index] = element;
     });
 
 }
