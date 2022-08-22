@@ -5,11 +5,14 @@
  * The pipeline one-click file needs to be passed to
  * this script as the first argument and the second argument
  * should be the validation details for that particular pipeline.
+ * 
+ * NOTE: This file will never run on its own and will just contain
+ * functions that can be used by external tests defined.
  */
 import fetch from "node-fetch";
 import * as fs from "fs";
 import { default as FormData } from "form-data";
-const { test } = global;
+const { test, expect } = global;
 
 import config from "./config.js";
 
@@ -188,21 +191,14 @@ function verifyResponse(validatorObject, validateResponse) {
 }
 
 
-async function validatePipeline() {
+async function validatePipeline(pathToPipeline, pathToValidateFile) {
     /**
      * Validate the pipeline and take care of everything
      * else linked to that.
+     * 
+     * @param {string} pathToPipeline path to the pipeline file
+     * @param {string} pathToValidateFile path to the validate file
      */
-    const argsPassed = process.argv.slice(2);
-
-    if (argsPassed.length < 2) {
-        console.error("usage: validate.js <path to pipeline file> <path to validation file>")
-        return
-    }
-
-    var pathToPipeline = argsPassed[0];
-    var pathToValidateFile = argsPassed[1];
-
     // Parse the configuration to extract the APPBASE_URL
     var appbaseURL = config.APPBASE_URL
     var appbaseCREDS = config.CREDENTIALS
@@ -256,6 +252,6 @@ async function validatePipeline() {
 }
 
 
-(async () => {
-    validatePipeline();
+(() => {
+    console.log("This file is not made to run on the CLI directly. Functions defined here can be imported to run on test suites!");
 })()
