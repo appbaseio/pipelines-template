@@ -6,8 +6,8 @@ const validate = require("../validate");
 
 const PIPELINES_TO_VALIDATE = [
     {
-        "pipelinePath": "../../basic/pipeline_oneclick.json",
-        "validatePath": "../../basic/validate.json"
+        "pipelinePath": "../basic/pipeline_oneclick.json",
+        "validatePath": "../basic/validate.json"
     }
 ]
 
