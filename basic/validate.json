@@ -1,0 +1,7 @@
+{
+    "request": {
+        "headers": {},
+        "body": "{\"query\":[{\"id\":\"test\",\"value\":\"something\"}]}"
+    },
+    "response": {}
+}
