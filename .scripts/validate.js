@@ -9,12 +9,14 @@
  * NOTE: This file will never run on its own and will just contain
  * functions that can be used by external tests defined.
  */
-import fetch from "node-fetch";
-import * as fs from "fs";
-import { default as FormData } from "form-data";
+
+const fetch = require("node-fetch");
+const fs = require("fs");
+const FormData = require("form-data");
 const { test, expect } = global;
 
-import config from "./config.js";
+const configuration = require("./config");
+const config = configuration.getConfig();
 
 async function checkUpstreamActive(appbaseURL, appbaseCREDS) {
     /**
@@ -191,66 +193,67 @@ function verifyResponse(validatorObject, validateResponse) {
 }
 
 
-async function validatePipeline(pathToPipeline, pathToValidateFile) {
-    /**
-     * Validate the pipeline and take care of everything
-     * else linked to that.
-     * 
-     * @param {string} pathToPipeline path to the pipeline file
-     * @param {string} pathToValidateFile path to the validate file
-     */
-    // Parse the configuration to extract the APPBASE_URL
-    var appbaseURL = config.APPBASE_URL
-    var appbaseCREDS = config.CREDENTIALS
+module.exports = {
+    validatePipeline: async function (pathToPipeline, pathToValidateFile) {
+        /**
+         * Validate the pipeline and take care of everything
+         * else linked to that.
+         * 
+         * @param {string} pathToPipeline path to the pipeline file
+         * @param {string} pathToValidateFile path to the validate file
+         */
+        // Parse the configuration to extract the APPBASE_URL
+        var appbaseURL = config.APPBASE_URL
+        var appbaseCREDS = config.CREDENTIALS
 
-    // Verify that upstream is active
-    var isUpstreamActive = await checkUpstreamActive(appbaseURL, appbaseCREDS)
-    if (!isUpstreamActive) {
-        console.error("upstream is not active, `/arc/_health` returned a non OK status code!")
-        return
+        // Verify that upstream is active
+        var isUpstreamActive = await checkUpstreamActive(appbaseURL, appbaseCREDS)
+        if (!isUpstreamActive) {
+            console.error("upstream is not active, `/arc/_health` returned a non OK status code!")
+            return
+        }
+
+        console.log("Upstream is active: status received is OK!")
+
+        // Parse the pipeline one-click JSON file to get it ready for sending the request.
+        var pipelineContent = null
+        try {
+            pipelineContent = parsePipelineFile(pathToPipeline);
+        } catch (err) {
+            console.error("error while parsing pipeline file: ", err)
+            return
+        }
+
+        if (pipelineContent == null) {
+            console.error("no content present in the passed pipeline file!")
+            return
+        }
+
+        console.log("pipeline file parsed successfully!")
+
+        // Parse the validator file
+        var validatorObj = null
+        try {
+            validatorObj = parseValidator(pathToValidateFile)
+        } catch (err) {
+            console.error("error while parsing validator file: ", err)
+            return
+        }
+
+        if (validatorObj == null) {
+            console.error("no content present in the passed validator file!")
+            return
+        }
+
+        console.log("validator file parsed successfully!");
+
+        const validateResponse = await hitValidatePipeline(pipelineContent, validatorObj.request, appbaseURL, appbaseCREDS);
+
+        // Check the response code of the response and accordingly verify based on the details
+        // specified in the validator object passed.
+        verifyResponse(validatorObj, validateResponse);
     }
-
-    console.log("Upstream is active: status received is OK!")
-
-    // Parse the pipeline one-click JSON file to get it ready for sending the request.
-    var pipelineContent = null
-    try {
-        pipelineContent = parsePipelineFile(pathToPipeline);
-    } catch (err) {
-        console.error("error while parsing pipeline file: ", err)
-        return
-    }
-
-    if (pipelineContent == null) {
-        console.error("no content present in the passed pipeline file!")
-        return
-    }
-
-    console.log("pipeline file parsed successfully!")
-
-    // Parse the validator file
-    var validatorObj = null
-    try {
-        validatorObj = parseValidator(pathToValidateFile)
-    } catch (err) {
-        console.error("error while parsing validator file: ", err)
-        return
-    }
-
-    if (validatorObj == null) {
-        console.error("no content present in the passed validator file!")
-        return
-    }
-
-    console.log("validator file parsed successfully!");
-
-    const validateResponse = await hitValidatePipeline(pipelineContent, validatorObj.request, appbaseURL, appbaseCREDS);
-
-    // Check the response code of the response and accordingly verify based on the details
-    // specified in the validator object passed.
-    verifyResponse(validatorObj, validateResponse);
-}
-
+};
 
 (() => {
     console.log("This file is not made to run on the CLI directly. Functions defined here can be imported to run on test suites!");
