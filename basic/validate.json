@@ -3,6 +3,7 @@
         "headers": {},
         "body": "{\"query\":[{\"id\":\"test\",\"value\":\"something\"}]}"
     },
+    "matchCriteriaStatus": 200,
     "response": {
         "code": 200,
         "body": "",
