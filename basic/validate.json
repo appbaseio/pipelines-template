@@ -1,7 +1,7 @@
 {
     "request": {
         "headers": {},
-        "body": "{\"query\":[{\"id\":\"test\",\"value\":\"something\"}]}"
+        "body": "{\"query\":[{\"id\":\"test\",\"value\":\"something\", \"dataField\": [\"author\"]}]}"
     },
     "matchCriteriaStatus": 200,
     "response": {
