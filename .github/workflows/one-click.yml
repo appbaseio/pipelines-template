@@ -6,9 +6,6 @@ jobs:
   generate_one_click:
     runs-on: ubuntu-latest
     name: Generate One Click Configs
-    strategy:
-      matrix:
-        plugin: [basic, cache_analytics, http_request, knn_search, knowledge_graph, mongodb, query_rules, saved_search, solr, solr_validate, vector_indexing]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -21,8 +18,8 @@ jobs:
       - name: Install dependencies
         run: yarn
         working-directory: ./.scripts
-      - name: Run ${{matrix.plugin}} one-click generation
-        run: yarn one-click ${{ format('../{0}/pipeline.yaml', matrix.plugin) }}
+      - name: Run one-click generation
+        run: sh ./generate-oneclick.sh
         working-directory: ./.scripts
       - name: Add and Commit changes
         uses: EndBug/add-and-commit@v9
