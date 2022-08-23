@@ -15,6 +15,13 @@ yarn one-click <path to the pipeline file>
 
 > NOTE: The `path to the pipeline file` should be a valid path and can be either `yaml` or `json`. Moreover, the `scriptRef` dependencies will be searched for in the same directory that the pipeline file is present in.
 
+### Util Script
+
+There is also a shell script provided that automatically generates one-click pipeline configurations for all the pipelines present in this repo. This script is also used by the GitHub action to generate these files automatically.
+
+> If a new pipeline template is added, it's name should be added in this script located [here](./generate-oneclick.sh).
+
+
 ## Test Script
 
 It is important to test the pipelines before they are allowed to be used by the users. A `validate` script takes care of validating the pipeline given that some sane `response` expectations are specified in to the script.
