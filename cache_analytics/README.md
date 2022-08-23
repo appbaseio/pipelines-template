@@ -2,7 +2,7 @@
 
 This pipeline shows how to use the pre-built stages provided to cache the responses as well as use analytics
 
-[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/cache_analytics/pipeline_oneclick.yaml)
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/cache_analytics/pipeline_oneclick.json)
 
 ## Authorization
 

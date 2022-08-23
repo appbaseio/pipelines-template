@@ -2,7 +2,7 @@
 
 This pipeline fetches data from Google's Knowledge graph and merges it with the ElasticSearch response data.
 
-[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/knowledge_graph/pipeline_oneclick.yaml)
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/knowledge_graph/pipeline_oneclick.json)
 
 ## Envs
 

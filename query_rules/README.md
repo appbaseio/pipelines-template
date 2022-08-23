@@ -2,7 +2,7 @@
 
 This pipeline explains how to use multiple pre-built stages to build a full-fledged search pipeline that does a lot of things like search relevancy, promoting results, replacing search term etc.
 
-[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/query_rules/pipeline.yaml)
+[Deploy this pipeline with just a click](https://dashboard.reactivesearch.io/deploy?template=https://raw.githubusercontent.com/appbaseio/pipelines-template/master/query_rules/pipeline.json)
 
 ## Authorization
 
