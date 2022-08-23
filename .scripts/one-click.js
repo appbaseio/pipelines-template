@@ -44,7 +44,8 @@ function parseScriptRefToOneLine(scriptRef, pipelinePath) {
 
     // Check if the file exists, else throw an error.
     if (!fs.existsSync(scriptRefPath)) {
-        throw new Error(`scriptRef passed with path '${scriptRefPath}' does not exist`);
+        const errMsg = `scriptRef passed with path ${scriptRefPath} does not exist`;
+        throw new Error(errMsg);
     }
 
     let scriptRefContent = fs.readFileSync(scriptRefPath);
