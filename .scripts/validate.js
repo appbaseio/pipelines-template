@@ -296,7 +296,3 @@ module.exports = {
         return getVerifyResponse(validatorObj, validateResponse);
     }
 };
-
-(() => {
-    console.log("This file is not made to run on the CLI directly. Functions defined here can be imported to run on test suites!");
-})()
