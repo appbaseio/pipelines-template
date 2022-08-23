@@ -115,12 +115,19 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL, appbaseCRE
      * @param {string} appbaseURL APPBASE_URL to hit to validate the pipeline.
      * @param {string} appbaseCREDS Credentials to hit appbase URL
      * 
-     * @returns {Response} Response received from the validate endpoint.
+     * @returns {Object} Object containing the original response and the response
+     * body parsed to JSON.
      */
     const formToSend = new FormData();
 
+    // Build the pipeline body since it cannot be just the content directly.
+    pipelineBodyToSend = {
+        "content": pipelineBody,
+        "extension": "json"
+    }
+
     // Add the pipeline body
-    formToSend.append("pipeline", pipelineBody);
+    formToSend.append("pipeline", JSON.stringify(pipelineBodyToSend));
 
     // Add the request body as a stringified JSON
     formToSend.append("request", JSON.stringify(request));
@@ -132,8 +139,9 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL, appbaseCRE
             "Authorization": `Basic ${Buffer.from(appbaseCREDS).toString("base64")}`
         }
     });
+    const responseBody = await validateResponse.json();
 
-    return validateResponse;
+    return { "body": responseBody, "originalResponse": validateResponse };
 }
 
 
@@ -148,7 +156,7 @@ function getVerifyResponse(validatorObject, validateResponse) {
      * 
      * @param {Object} validatorObject Validator object to get user
      * provided validation details from.
-     * @param {Response} validateResponse Response received from the
+     * @param {Object} validateResponse Response received from the
      * validate endpoint.
      * 
      * @returns {Object} Object containing details about verifying the
@@ -163,13 +171,23 @@ function getVerifyResponse(validatorObject, validateResponse) {
 
     let testObjectToReturn = {
         "status": {
-            "expect": validateResponse.status,
+            "expect": validateResponse.originalResponse.status,
             "toBe": validatorObject.matchCriteriaStatus
         }
     }
 
+    // If the response body is an empty string then return it as is.
+    if (validateResponse.body.response.body == "") {
+        testObjectToReturn["response"] = {
+            "expect": validatorObject.response.body,
+            "toBe": validateResponse.body.response.body
+        }
+
+        return testObjectToReturn;
+    }
+
     // Parse the response into an object
-    responseObject = JSON.parse(validateResponse)
+    responseObject = JSON.parse(validateResponse.body.response.body);
 
     // If `matchCriteriaPath` is passed, then we need to extract the value
     // for that key from the response and verify that, else use the whole response
@@ -197,7 +215,7 @@ function getVerifyResponse(validatorObject, validateResponse) {
     // Verify the response object against the response passed in
     // the validator object.
     testObjectToReturn["response"] = {
-        "expect": validatorObject.response,
+        "expect": validatorObject.response.body,
         "toBe": responseObject
     }
 

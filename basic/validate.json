@@ -3,5 +3,9 @@
         "headers": {},
         "body": "{\"query\":[{\"id\":\"test\",\"value\":\"something\"}]}"
     },
-    "response": {}
+    "response": {
+        "code": 200,
+        "body": "",
+        "headers": {}
+    }
 }
