@@ -137,15 +137,22 @@ async function hitValidatePipeline(pipelineBody, request, appbaseURL, appbaseCRE
 }
 
 
-function verifyResponse(validatorObject, validateResponse) {
+function getVerifyResponse(validatorObject, validateResponse) {
     /**
      * Take care of verifying the response based on the user
      * specification as passed in the validation file.
+     * 
+     * This function does not actually verify but instead returns
+     * an object that contains the values to verify on an outer
+     * level.
      * 
      * @param {Object} validatorObject Validator object to get user
      * provided validation details from.
      * @param {Response} validateResponse Response received from the
      * validate endpoint.
+     * 
+     * @returns {Object} Object containing details about verifying the
+     * response and status code.
      */
 
     // If the `matchCriteriaStatus` is not passed, set it to 200.
@@ -154,10 +161,12 @@ function verifyResponse(validatorObject, validateResponse) {
         validatorObject.matchCriteriaStatus = 200;
     }
 
-    // Verify the status code based on the response.
-    test("response status code match", () => {
-        expect(validateResponse.status).toBe(validatorObject.matchCriteriaStatus);
-    });
+    let testObjectToReturn = {
+        "status": {
+            "expect": validateResponse.status,
+            "toBe": validatorObject.matchCriteriaStatus
+        }
+    }
 
     // Parse the response into an object
     responseObject = JSON.parse(validateResponse)
@@ -187,9 +196,12 @@ function verifyResponse(validatorObject, validateResponse) {
 
     // Verify the response object against the response passed in
     // the validator object.
-    test("response body match", () => {
-        expect(validatorObject.response).toMatchObject(responseObject);
-    })
+    testObjectToReturn["response"] = {
+        "expect": validatorObject.response,
+        "toBe": responseObject
+    }
+
+    return testObjectToReturn;
 }
 
 
@@ -201,6 +213,9 @@ module.exports = {
          * 
          * @param {string} pathToPipeline path to the pipeline file
          * @param {string} pathToValidateFile path to the validate file
+         * 
+         * @returns {Object} Object containing values to test them at an
+         * outer level.
          */
         // Parse the configuration to extract the APPBASE_URL
         var appbaseURL = config.APPBASE_URL
@@ -251,7 +266,7 @@ module.exports = {
 
         // Check the response code of the response and accordingly verify based on the details
         // specified in the validator object passed.
-        verifyResponse(validatorObj, validateResponse);
+        return getVerifyResponse(validatorObj, validateResponse);
     }
 };
 

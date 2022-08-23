@@ -14,6 +14,12 @@ const PIPELINES_TO_VALIDATE = [
 
 test("validate all pipelines", async () => {
     for (const pipeline of PIPELINES_TO_VALIDATE) {
-        await validate.validatePipeline(pipeline.pipelinePath, pipeline.validatePath);
+        const objectToVerify = await validate.validatePipeline(pipeline.pipelinePath, pipeline.validatePath);
+
+        // Verify the status
+        expect(objectToVerify.status.expect).toBe(objectToVerify.status.toBe);
+
+        // Verify the response
+        expect(objectToVerify.response.expect).toBe(objectToVerify.response.toBe);
     }
 })
