@@ -12,7 +12,7 @@ import * as path from "path";
 
 
 function addSlashes(str) {
-    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+    return (str + '').replace(/[\\"]/g, '\\$&').replace(/\u0000/g, '\\0');
 }
 
 
@@ -48,7 +48,7 @@ function parseScriptRefToOneLine(scriptRef, pipelinePath) {
     }
 
     let scriptRefContent = fs.readFileSync(scriptRefPath);
-    const escapedContent = addSlashes(scriptRefContent);
+    const escapedContent = addSlashes(scriptRefContent).replace(/\n {4}/gm, '');
     return escapedContent;
 }
 
