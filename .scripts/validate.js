@@ -13,7 +13,6 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
 const FormData = require("form-data");
-const { test, expect } = global;
 
 const configuration = require("./config");
 const config = configuration.getConfig();
