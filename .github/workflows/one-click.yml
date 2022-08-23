@@ -19,7 +19,7 @@ jobs:
         run: yarn
         working-directory: ./.scripts
       - name: Run one-click generation
-        run: sh ./generate-oneclick.sh
+        run: bash ./generate-oneclick.sh
         working-directory: ./.scripts
       - name: Add and Commit changes
         uses: EndBug/add-and-commit@v9
