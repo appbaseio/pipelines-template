@@ -44,7 +44,10 @@ This JSON file should specify how the pipeline's validation is done. It should b
      "headers": {},
      "body": ""
    },
-  "response": { ... },
+  "response": { 
+     "code": 200,
+     "body": ""
+   },
   "matchCriteriaPath": "", 
   "matchCriteriaStatus": ""
 }
@@ -55,4 +58,6 @@ This JSON file should specify how the pipeline's validation is done. It should b
 - `response` should be an object that will be matched against the received response.
 - `matchCriteriaPath` should be the path of the response to match against the received one. If empty, whole response is considered.
 - `matchCriteriaStatus` should be the expected status code in the response. This will be set to `200` by default.
+- `response.body` should be a stringified JSON to be matched to the `response.body` of the validate endpoints response.
+- `response.code` should be the `code` of the validate endpoint `response.body`. If not passed, it will not be tested.
 
