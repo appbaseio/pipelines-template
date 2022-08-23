@@ -219,6 +219,15 @@ function getVerifyResponse(validatorObject, validateResponse) {
         "toBe": responseObject
     }
 
+    // If the `response.status` field is present, validate the response received in
+    // the `response.code` field of the JSON response.
+    if (Object.keys(validatorObject.response).includes("code") && validatorObject.response.code != null) {
+        testObjectToReturn["responseCode"] = {
+            "expect": validatorObject.response.code,
+            "toBe": validateResponse.body.response.code
+        }
+    }
+
     return testObjectToReturn;
 }
 
