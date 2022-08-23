@@ -8,6 +8,10 @@ const PIPELINES_TO_VALIDATE = [
     {
         "pipelinePath": "../basic/pipeline_oneclick.json",
         "validatePath": "../basic/validate.json"
+    },
+    {
+        "pipelinePath": "../cache_analytics/pipeline_oneclick.json",
+        "validatePath": "../cache_analytics/validate.json"
     }
 ]
 

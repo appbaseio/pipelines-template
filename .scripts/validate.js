@@ -200,7 +200,7 @@ function getVerifyResponse(validatorObject, validateResponse) {
     // If `matchCriteriaPath` is passed, then we need to extract the value
     // for that key from the response and verify that, else use the whole response
     // JSON as a whole.
-    if (!Object.keys(validatorObject).includes("matchCriteriaPath") || validatorObject.matchCriteriaPath == "") {
+    if (Object.keys(validatorObject).includes("matchCriteriaPath") && validatorObject.matchCriteriaPath != "") {
         // Extract the value
         // We need to split the passed key using `dot` and use the keys dynamically
         // to extract the name.
