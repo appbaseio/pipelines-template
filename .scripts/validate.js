@@ -176,6 +176,15 @@ function getVerifyResponse(validatorObject, validateResponse) {
         }
     }
 
+    // If the `response.status` field is present, validate the response received in
+    // the `response.code` field of the JSON response.
+    if (Object.keys(validatorObject.response).includes("code") && validatorObject.response.code != null) {
+        testObjectToReturn["responseCode"] = {
+            "expect": validatorObject.response.code,
+            "toBe": validateResponse.body.response.code
+        }
+    }
+
     // If the response body is an empty string then return it as is.
     if (validateResponse.body.response.body == "") {
         testObjectToReturn["response"] = {
@@ -217,15 +226,6 @@ function getVerifyResponse(validatorObject, validateResponse) {
     testObjectToReturn["response"] = {
         "expect": validatorObject.response.body,
         "toBe": responseObject
-    }
-
-    // If the `response.status` field is present, validate the response received in
-    // the `response.code` field of the JSON response.
-    if (Object.keys(validatorObject.response).includes("code") && validatorObject.response.code != null) {
-        testObjectToReturn["responseCode"] = {
-            "expect": validatorObject.response.code,
-            "toBe": validateResponse.body.response.code
-        }
     }
 
     return testObjectToReturn;

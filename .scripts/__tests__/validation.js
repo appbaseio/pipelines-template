@@ -16,14 +16,14 @@ test("validate all pipelines", async () => {
     for (const pipeline of PIPELINES_TO_VALIDATE) {
         const objectToVerify = await validate.validatePipeline(pipeline.pipelinePath, pipeline.validatePath);
 
-        expectedObject = JSON.stringify({
+        const expectedObject = {
             "status": objectToVerify.status.expect,
             "response": objectToVerify.response.expect,
-        });
-        receivedObject = JSON.stringify({
+        };
+        const receivedObject = {
             "status": objectToVerify.status.toBe,
             "response": objectToVerify.response.toBe
-        });
+        };
 
         if (Object.keys(objectToVerify).includes("responseCode")) {
             expectedObject["responseCode"] = objectToVerify.responseCode.expect;
@@ -31,6 +31,6 @@ test("validate all pipelines", async () => {
         }
 
         // Verify the status and response
-        expect(expectedObject).toBe(receivedObject);
+        expect(JSON.stringify(expectedObject)).toBe(JSON.stringify(receivedObject));
     }
 })
