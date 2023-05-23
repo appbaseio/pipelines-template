@@ -1,0 +1,21 @@
+{
+  "name": "pipeline-validator",
+  "version": "1.0.0",
+  "description": "Validate ReactiveSearch Pipelines",
+  "main": "index.js",
+  "author": "deepjyoti30",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "form-data": "^4.0.0",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "2"
+  },
+  "devDependencies": {
+    "jest": "^28.1.3"
+  },
+  "scripts": {
+    "test": "jest",
+    "one-click": "node ./one-click.js"
+  }
+}

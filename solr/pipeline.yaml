@@ -43,7 +43,7 @@ stages:
   scriptRef: 'extractMetadata.js'
   continueOnError: false
 - id: extract fusion host and credentials
-  scriptRef: 'setEnvironment.js'
+  scriptRef: 'setEnvironments.js'
   continueOnError: false
 - id: rs
   use: reactivesearchQuery

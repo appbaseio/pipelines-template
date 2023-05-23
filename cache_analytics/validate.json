@@ -1,0 +1,12 @@
+{
+    "request": {
+        "headers": {},
+        "body": "{\"query\":[{\"id\":\"test\",\"value\":\"something\", \"dataField\": [\"author\"]}]}"
+    },
+    "matchCriteriaStatus": 200,
+    "matchCriteriaPath": "settings.took",
+    "response": {
+        "code": 200,
+        "body": 0
+    }
+}
