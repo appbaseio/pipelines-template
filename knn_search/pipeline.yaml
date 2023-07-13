@@ -1,42 +1,22 @@
 enabled: true
-description: kNN endpoint to search query in lyrics
-
 routes:
-  - path: /knn_search/_reactivesearch
+  - path: "/amazon_reviews/_reactivesearch"
     method: POST
     classify:
-      category: elasticsearch
-      acl: search
-  - path: /knn_search/_reactivesearch.v3
-    method: POST
-    classify:
-      category: elasticsearch
-      acl: search
-
-envs:
-  bertURL: ${{ BERT_URL }}
-  index: "lyrics-app-data"
-  NUM_CANDIDATES: 10000
-  NUM_K: 10
-  VECTOR_FIELD_NAME: "lyric_vector"
+      category: reactivesearch
 
 stages:
   - id: authorize user
     use: authorization
-  - id: kNN vectors
-    scriptRef: "knnSearch.js"
-    async: true
-  - id: determine search
-    scriptRef: "determineSearch.js"
-    needs:
-      - kNN search
-  - id: es query
-    use: elasticsearchQuery
+  - id: fetch embeddings
+    use: openAIEmbeddings
     inputs:
-      path: "{{esPath}}"
+      apiKey: "${{ OPEN_AI_API_KEY }}"
+      useWithReactiveSearchQuery: true
+    continueOnError: false
+  - use: reactivesearchQuery
     needs:
-      - determine search
-  - id: update response
-    scriptRef: "updateResponse.js"
-    needs:
-      - es query
+      - fetch embeddings
+    continueOnError: false
+  - use: elasticsearchQuery
+    continueOnError: false
