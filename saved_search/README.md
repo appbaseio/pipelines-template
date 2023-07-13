@@ -40,20 +40,6 @@ For this, we expose a pre defined stage `authorization` that does everything tha
 
 > It is encouraged that this stage is added in all pipeline definitions as the first step.
 
-## Modify Request
-
-This stage is a _custom_ stage defined to explain how custom stages work. Here, a JS script is executed when the stage is executed. This script [can be found here](./modifyRequest.js).
-
-> It is assumed that the request body will contain a `query` field which will be an array of objects.
-
-This script will add a new object into the `query` field which is an array of objects. This object will be:
-
-```json
-{
-  "id": "search2"
-}
-```
-
 ## Save Search
 
 This stage defines the custom JS script [that can be found here](./saveSearch.js) to save the search to the `saved_search_index` using the `saved_search_credentials` passed by the user.

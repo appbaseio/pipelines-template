@@ -1,7 +1,7 @@
 enabled: true
 description: Pipeline to save search to an Elasticsearch index
 routes:
-  - path: "/saved-search/_reactivesearch"
+  - path: "/saved-search-demo"
     method: POST
     classify:
       category: reactivesearch
@@ -11,12 +11,10 @@ envs:
     - test
   save_search_URL: ${{ SAVED_SEARCH_URL }}
   save_search_METHOD: "POST"
-  save_search_headers: "{\"Content-Type\": \"application/json\"}"
+  save_search_headers: '{"Content-Type": "application/json"}'
 
 stages:
   - use: authorization
-  - id: modify_request
-    scriptRef: "modifyRequest.js"
   - id: save_search
     async: true
     scriptRef: "saveSearch.js"

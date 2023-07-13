@@ -3,7 +3,7 @@
     "description": "Pipeline to save search to an Elasticsearch index",
     "routes": [
         {
-            "path": "/saved-search/_reactivesearch",
+            "path": "/saved-search-demo",
             "method": "POST",
             "classify": {
                 "category": "reactivesearch"
@@ -32,21 +32,9 @@
             }
         },
         {
-            "key": "save_search_URL",
+            "key": "SAVED_SEARCH_URL",
             "label": "Save Search URL",
             "description": "URL to send the save search request to",
-            "value": ""
-        },
-        {
-            "key": "save_search_METHOD",
-            "label": "Save Search Method",
-            "description": "Method to hit the save search request with",
-            "value": ""
-        },
-        {
-            "key": "save_search_HEADERS",
-            "label": "Save Search Headers",
-            "description": "Headers to use while sending save search request. This should be a stringified JSON.",
             "value": ""
         }
     ],
@@ -55,13 +43,9 @@
             "use": "authorization"
         },
         {
-            "id": "modify_request",
-            "script": "function handleRequest() { const reqBody = JSON.parse(context.request.body); return { request: { ...context.request, body: JSON.stringify({ ...reqBody, query: [...reqBody.query, { id: 'search2' }] }) } }; }"
-        },
-        {
             "id": "save_search",
             "async": true,
-            "scriptRef": "saveSearch.js"
+            "script": "async function handleRequest() { try { const headersPassed = JSON.parse(context.envs.save_search_HEADERS); const res = await fetch(context.envs.save_search_URL, { method: context.envs.save_search_METHOD, body: context.request.body, headers: headersPassed }); } catch (e) { console.log('error', e); } return {}; }"
         },
         {
             "use": "reactivesearchQuery",
