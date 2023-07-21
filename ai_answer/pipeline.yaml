@@ -30,7 +30,7 @@ stages:
   - id: es_query
     use: elasticsearchQuery
   - id: answerAI
-    use: answerAI
+    use: AIAnswer
     inputs:
       topDocsForContext: 10
       docTemplate: "${{AI_DOC_TEMPLATE}}"
