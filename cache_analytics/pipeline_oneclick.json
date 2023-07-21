@@ -3,7 +3,7 @@
   "description": "Pipeline to show how to use cache and record analytics",
   "routes": [
     {
-      "path": "cache-and-analytics/_reactivesearch",
+      "path": "/cache-and-analytics/_reactivesearch",
       "method": "POST",
       "classify": {
         "category": "reactivesearch"
