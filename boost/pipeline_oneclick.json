@@ -1,0 +1,57 @@
+{
+    "enabled": true,
+    "routes": [
+        {
+            "path": "/query-boost-example",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "envs": {
+        "category": "reactivesearch",
+        "index": [
+            "best-buy-dataset"
+        ]
+    },
+    "stages": [
+        {
+            "use": "authorization",
+            "continueOnError": false
+        },
+        {
+            "id": "boostByScore",
+            "use": "boost",
+            "inputs": {
+                "dataField": "categoryPath.name",
+                "value": [
+                    "cell Phones",
+                    "Prepaid Phones"
+                ]
+            },
+            "continueOnError": false
+        },
+        {
+            "id": "promoteResults",
+            "use": "boost",
+            "inputs": {
+                "dataField": "albumTitle",
+                "value": [
+                    "Galaxy Note10+"
+                ],
+                "boostType": "promote",
+                "boostMaxDocs": 1
+            },
+            "continueOnError": false
+        },
+        {
+            "use": "reactivesearchQuery",
+            "continueOnError": false
+        },
+        {
+            "use": "elasticsearchQuery",
+            "continueOnError": false
+        }
+    ]
+}
