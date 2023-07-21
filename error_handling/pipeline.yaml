@@ -1,0 +1,23 @@
+enabled: true
+description: Handle errors gracefully
+
+routes:
+  - path: /error-pipeline/_reactivesearch
+    method: POST
+      classify:
+        category: reactivesearch
+
+stages:
+  - id: Authorize User
+    use: authorization
+    continueOnError: false
+  - id: check query field
+    scriptRef: checkQueryWithError.js
+    continueOnError: false
+  - id: set error
+    scriptRef: setError.js
+  - id: ReactiveSearch Query
+    use: reactivesearchQuery
+    continueOnError: false
+  - id: ElasticSearch Query
+    use: elasticsearchQuery
