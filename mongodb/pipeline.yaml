@@ -1,7 +1,7 @@
 enabled: true
 description: Pipeline to use mongo db as search backend
 routes:
-  - path: mongo-db-example/_reactivesearch
+  - path: /mongo-db-example/_reactivesearch
     method: POST
     classify:
       category: reactivesearch
