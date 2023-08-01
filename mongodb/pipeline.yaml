@@ -1,14 +1,13 @@
 enabled: true
 description: Pipeline to use mongo db as search backend
 routes:
-- path: mongo-db-example/_reactivesearch
-  method: POST
-  classify:
-    category: reactivesearch
+  - path: mongo-db-example/_reactivesearch
+    method: POST
+    classify:
+      category: reactivesearch
 
 envs:
   category: reactivesearch
-
 
 global_envs:
   - label: MongoDB Host
@@ -27,27 +26,21 @@ global_envs:
     key: MONGO_CREDS
     value: ""
     description: "Credentials to access the mongoDB instance"
-    validate:
-      url: "`${MONGO_HOST}/${MONGO_DB}`"
-      headers:
-        Authorization: "`Basic ${btoa(${MONGO_CREDS})}`"
-      method: GET
-      expected_status: 200
 
 stages:
-- use: authorization
-  continueOnError: false
-- use: reactivesearchQuery
-  inputs:
-    backend: mongodb
-  continueOnError: false
-- id: extract envs to context
-  scriptRef: "extractEnvs.js"
-- use: mongoDBQuery
-  inputs:
-    host: "{{mongoHost}}"
-    credentials: "{{mongoCreds}}"
-    db: "{{mongoDb}}"
-    collection: "{{mongoCollection}}"
-    connectionOptions: authSource=admin&readPreference=primary&ssl=true
-  continueOnError: false
+  - use: authorization
+    continueOnError: false
+  - use: reactivesearchQuery
+    inputs:
+      backend: mongodb
+    continueOnError: false
+  - id: extract envs to context
+    scriptRef: "extractEnvs.js"
+  - use: mongoDBQuery
+    inputs:
+      host: "{{mongoHost}}"
+      credentials: "{{mongoCreds}}"
+      db: "{{mongoDb}}"
+      collection: "{{mongoCollection}}"
+      connectionOptions: authSource=admin&readPreference=primary&ssl=true
+    continueOnError: false
