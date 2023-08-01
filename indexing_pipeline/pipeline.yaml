@@ -10,7 +10,7 @@ routes:
 
 stages:
   - id: authorise user
-    uses: authorization
+    use: authorization
   - id: get location details
     scriptRef: "getLocation.js"
     async: true
@@ -19,6 +19,6 @@ stages:
     needs:
       - get location details
   - id: index data
-    uses: elasticsearchQuery
+    use: elasticsearchQuery
     needs:
       - add details to body

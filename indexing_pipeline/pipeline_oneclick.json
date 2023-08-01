@@ -14,7 +14,7 @@
     "stages": [
         {
             "id": "authorise user",
-            "uses": "authorization"
+            "use": "authorization"
         },
         {
             "id": "get location details",
@@ -30,7 +30,7 @@
         },
         {
             "id": "index data",
-            "uses": "elasticsearchQuery",
+            "use": "elasticsearchQuery",
             "needs": [
                 "add details to body"
             ]
