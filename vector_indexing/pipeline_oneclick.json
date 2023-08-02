@@ -3,7 +3,7 @@
     "description": "Index pipeline to store vectorized data",
     "routes": [
         {
-            "path": "/lyrics-app-data/_doc",
+            "path": "/amazon_reviews/_doc",
             "method": "POST",
             "classify": {
                 "category": "elasticsearch",
@@ -11,46 +11,29 @@
             }
         }
     ],
-    "envs": {
-        "bertURL": "${{ BERT_URL }}",
-        "method": "POST"
-    },
     "stages": [
         {
             "id": "authorize user",
             "use": "authorization"
         },
         {
-            "id": "add body for vector request",
-            "script": "function handleRequest() {const requestBody = JSON.parse(context.request.body);\nreturn {    \\\"lyricBody\\\": getBody(requestBody.Lyric)}\n}\n\nfunction getBody(data) {return JSON.stringify({    data: [{ text: data }],    execEndpoint: \\\"/\\\"})\n}"
-        },
-        {
-            "id": "lyric_vector",
-            "use": "httpRequest",
-            "async": true,
+            "id": "fetch embeddings",
+            "use": "openAIEmbeddingsIndex",
             "inputs": {
-                "url": "{{bertURL}}/post",
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "body": "{{lyricBody}}"
+                "apiKey": "${{ OPEN_AI_API_KEY }}",
+                "inputKeys": [
+                    "Summary",
+                    "Text"
+                ],
+                "outputKey": "vector_data"
             },
             "continueOnError": false
-        },
-        {
-            "id": "merge vector",
-            "needs": [
-                "lyric_vector"
-            ],
-            "continueOnError": false,
-            "script": "function handleRequest() {const requestBody = JSON.parse(context.request.body)const lyricVector = JSON.parse(context[\\\"lyric_vector\\\"])\nreturn {    request: {        ...context.request,        body: JSON.stringify({            ...requestBody,            \\\"lyric_vector\\\": lyricVector.data[0].embedding        })    }}\n}"
         },
         {
             "id": "index data",
             "use": "elasticsearchQuery",
             "needs": [
-                "merge vector"
+                "fetch embeddings"
             ]
         }
     ]

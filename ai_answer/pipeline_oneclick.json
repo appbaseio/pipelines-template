@@ -1,0 +1,61 @@
+{
+    "enabled": true,
+    "routes": [
+        {
+            "path": "/_ai_answer_demo",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "envs": {
+        "index": [
+            "${{ AI_INDEX }}"
+        ]
+    },
+    "global_envs": [
+        {
+            "key": "AI_INDEX",
+            "value": "movie-db",
+            "description": "Index where AI Answer queries are run against",
+            "label": "Index"
+        },
+        {
+            "key": "AI_DOC_TEMPLATE",
+            "value": "${source.title} is ${source.overview} with url as ${source.backdrop_path}",
+            "description": "Template to populate and send to ChatGPT. Values between ${} are dynamically resolved if the value is found in the response hit's.",
+            "label": "Template for AI Answer"
+        },
+        {
+            "key": "OPEN_AI_API_KEY",
+            "value": "",
+            "description": "OpenAI API Key to access their API",
+            "label": "OpenAI's API key"
+        }
+    ],
+    "stages": [
+        {
+            "id": "auth",
+            "use": "authorization"
+        },
+        {
+            "id": "query",
+            "use": "reactivesearchQuery"
+        },
+        {
+            "id": "es_query",
+            "use": "elasticsearchQuery"
+        },
+        {
+            "id": "answerAI",
+            "use": "AIAnswer",
+            "inputs": {
+                "topDocsForContext": 10,
+                "docTemplate": "${{AI_DOC_TEMPLATE}}",
+                "queryTemplate": "Can you tell me about: ${value}",
+                "apiKey": "${{ OPEN_AI_API_KEY }}"
+            }
+        }
+    ]
+}

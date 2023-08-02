@@ -1,0 +1,24 @@
+enabled: true
+description: Index data into user-info with a location field
+
+routes:
+  - path: /user-info/_doc
+    method: POST
+    classify:
+      category: elasticsearch
+      acl: index
+
+stages:
+  - id: authorise user
+    use: authorization
+  - id: get location details
+    scriptRef: "getLocation.js"
+    async: true
+  - id: add details to body
+    scriptRef: "addDetails.js"
+    needs:
+      - get location details
+  - id: index data
+    use: elasticsearchQuery
+    needs:
+      - add details to body

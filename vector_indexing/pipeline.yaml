@@ -2,37 +2,25 @@ enabled: true
 description: Index pipeline to store vectorized data
 
 routes:
-  - path: /lyrics-app-data/_doc
+  - path: /amazon_reviews/_doc
     method: POST
     classify:
       category: elasticsearch
       acl: index
 
-envs:
-  bertURL: ${{ BERT_URL }}
-  method: POST
-
 stages:
   - id: authorize user
     use: authorization
-  - id: add body for vector request
-    scriptRef: "addBody.js"
-  - id: lyric_vector
-    use: httpRequest
-    async: true
+  - id: fetch embeddings
+    use: openAIEmbeddingsIndex
     inputs:
-      url: "{{bertURL}}/post"
-      method: POST
-      headers:
-        "Content-Type": "application/json"
-      body: "{{lyricBody}}"
-    continueOnError: false
-  - id: merge vector
-    scriptRef: "mergeVector.js"
-    needs:
-      - lyric_vector
+      apiKey: "${{ OPEN_AI_API_KEY }}"
+      inputKeys:
+        - Summary
+        - Text
+      outputKey: vector_data
     continueOnError: false
   - id: index data
     use: elasticsearchQuery
     needs:
-      - merge vector
+      - fetch embeddings

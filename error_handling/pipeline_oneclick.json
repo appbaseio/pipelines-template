@@ -1,0 +1,38 @@
+{
+    "enabled": true,
+    "description": "Handle errors gracefully",
+    "routes": [
+        {
+            "path": "/error-pipeline/_reactivesearch",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "stages": [
+        {
+            "id": "Authorize User",
+            "use": "authorization",
+            "continueOnError": false
+        },
+        {
+            "id": "check query field",
+            "script": "function handleRequest() { const requestBody = JSON.parse(context.request.body); if (requestBody.query == null) { throw error('query is a required field!'); } }",
+            "continueOnError": false
+        },
+        {
+            "id": "set error",
+            "script": "function handleRequest() { return { response: { body: JSON.stringify({'message': 'error while executing reactivesearch'}), code: 500 } } }"
+        },
+        {
+            "id": "ReactiveSearch Query",
+            "use": "reactivesearchQuery",
+            "continueOnError": false
+        },
+        {
+            "id": "ElasticSearch Query",
+            "use": "elasticsearchQuery"
+        }
+    ]
+}

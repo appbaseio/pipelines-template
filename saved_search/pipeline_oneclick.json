@@ -3,7 +3,7 @@
     "description": "Pipeline to save search to an Elasticsearch index",
     "routes": [
         {
-            "path": "/saved-search/_reactivesearch",
+            "path": "/saved-search-demo",
             "method": "POST",
             "classify": {
                 "category": "reactivesearch"
@@ -15,21 +15,18 @@
         "index": [
             "test"
         ],
-        "saved_search_index": "${{ SAVED_SEARCH_INDEX }}",
-        "saved_search_credentials": "${{ SAVED_SEARCH_CREDENTIALS }}"
+        "save_search_URL": "${{ SAVED_SEARCH_URL }}",
+        "save_search_METHOD": "POST",
+        "save_search_headers": "{\"Content-Type\": \"application/json\"}"
     },
     "stages": [
         {
             "use": "authorization"
         },
         {
-            "id": "modify_request",
-            "script": "function handleRequest() {const reqBody = JSON.parse(context.request.body);return {    request: {        ...context.request, body: JSON.stringify({            ...reqBody, query:                [...reqBody.query, { id: 'search2' }]        })    }};\n}"
-        },
-        {
             "id": "save_search",
             "async": true,
-            "script": "async function handleRequest() {try {    const res = await fetch(`http://${context.envs.origin}/${context.envs.saved_search_index}/_doc`,        {            method: 'POST', body: context.request.body, headers: {                'Content - Type': 'application/ json',                'Authorization': `Basic ${btoa(context.envs.saved_search_credentials)}`            }        });} catch (e) { console.log('error', e); } return {};\n}"
+            "script": "async function handleRequest() {try {    const headersPassed = JSON.parse(context.envs.save_search_HEADERS);    const res = await fetch(context.envs.save_search_URL,        {            method: context.envs.save_search_METHOD, body: context.request.body, headers: headersPassed        });} catch (e) { console.log('error', e); } return {};\n}"
         },
         {
             "use": "reactivesearchQuery",

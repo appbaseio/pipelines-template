@@ -1,61 +1,38 @@
 {
     "enabled": true,
-    "description": "kNN endpoint to search query in lyrics",
     "routes": [
         {
-            "path": "/knn_lyrics_app/_reactivesearch",
+            "path": "/amazon_reviews/_reactivesearch",
             "method": "POST",
             "classify": {
-                "category": "elasticsearch",
-                "acl": "search"
-            }
-        },
-        {
-            "path": "/knn_lyrics_app/_reactivesearch.v3",
-            "method": "POST",
-            "classify": {
-                "category": "elasticsearch",
-                "acl": "search"
+                "category": "reactivesearch"
             }
         }
     ],
-    "envs": {
-        "bertURL": "${{ BERT_URL }}",
-        "index": "lyrics-app-data"
-    },
     "stages": [
         {
             "id": "authorize user",
             "use": "authorization"
         },
         {
-            "id": "kNN vectors",
-            "async": true,
-            "script": "async function handleRequest() {const requestBody = JSON.parse(context.request.body)\nif (requestBody.query == undefined || requestBody.query.length < 1) return {}\nvar queryValue = undefined;requestBody.query.every(q => {    if (q.value != undefined) {        queryValue = q.value;        return false;    }    return true;})\nconst includeFields = requestBody.query[0].includeFieldsconst ids = requestBody.query.map(q => q.id);\nconst esBodyToPass = {    _source: {        includes: includeFields    }}var esPathToPass = `/${context.envs.index}/_knn_search`;\nif (queryValue != undefined) {    const vectoredValue = await getVectorForData(queryValue);    esBodyToPass.knn = {        field: \\\"lyric_vector\\\",        query_vector: vectoredValue,        k: 10,        num_candidates: 10000    }} else {    esPathToPass = `/${context.envs.index}/_search`    esBodyToPass.query = {        match_all: {}    }}\nreturn {    esPath: esPathToPass,    esBody: esBodyToPass,    queryIds: ids}\n}\n\n\nasync function getVectorForData(data) {const url = `${context.envs.bertURL}/post`;\n\nconst response = await fetch(url, {    method: \\\"POST\\\",    headers: {        \\\"Content-Type\\\": \\\"application/json\\\"    },    body: JSON.stringify({        data: [{ text: data }],        execEndpoint: \\\"/\\\"    })});\nconst jsonResponse = JSON.parse(response);return jsonResponse.data[0].embedding;\n}"
-        },
-        {
-            "id": "determine search",
-            "needs": [
-                "kNN search"
-            ],
-            "script": "function handleRequest() {return {    request: {        ...context.request,        body: JSON.stringify(context.esBody)    },}\n}"
-        },
-        {
-            "id": "es query",
-            "use": "elasticsearchQuery",
+            "id": "fetch embeddings",
+            "use": "openAIEmbeddings",
             "inputs": {
-                "path": "{{esPath}}"
+                "apiKey": "${{ OPEN_AI_API_KEY }}",
+                "useWithReactiveSearchQuery": true
             },
-            "needs": [
-                "determine search"
-            ]
+            "continueOnError": false
         },
         {
-            "id": "update response",
+            "use": "reactivesearchQuery",
             "needs": [
-                "es query"
+                "fetch embeddings"
             ],
-            "script": "function handleRequest() {const esResponse = JSON.parse(context.response.body);\nconst builtResponse = {};\ncontext.queryIds.forEach(qId => {    builtResponse[qId] = esResponse;})\nreturn {    response: {        ...context.response,        body: JSON.stringify(builtResponse)    }}\n}"
+            "continueOnError": false
+        },
+        {
+            "use": "elasticsearchQuery",
+            "continueOnError": false
         }
     ]
 }

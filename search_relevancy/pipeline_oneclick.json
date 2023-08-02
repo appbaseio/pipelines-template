@@ -1,0 +1,82 @@
+{
+    "enabled": true,
+    "description": "Promote cell phones",
+    "routes": [
+        {
+            "path": "/query-boost-example",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "envs": {
+        "category": "reactivesearch",
+        "index": [
+            "best-buy-dataset"
+        ]
+    },
+    "stages": [
+        {
+            "id": "authorization",
+            "use": "authorization",
+            "continueOnError": false
+        },
+        {
+            "id": "addFilter",
+            "use": "addFilter",
+            "continueOnError": false,
+            "description": "Filter results by department",
+            "inputs": {
+                "data": {
+                    "department.keyword": "DIGITAL COMMUNICATION"
+                }
+            }
+        },
+        {
+            "id": "replaceWords",
+            "use": "replaceWords",
+            "continueOnError": false,
+            "description": "Replaces iphone word to iphone 11 apple",
+            "inputs": {
+                "data": {
+                    "iphone": "iphone 11 apple"
+                }
+            }
+        },
+        {
+            "id": "boostByScore",
+            "use": "boost",
+            "continueOnError": false,
+            "inputs": {
+                "dataField": "categoryPath.name",
+                "value": [
+                    "cell Phones",
+                    "Prepaid Phones"
+                ],
+                "boostType": "score"
+            }
+        },
+        {
+            "id": "promoteResults",
+            "use": "boost",
+            "continueOnError": false,
+            "inputs": {
+                "dataField": "albumTitle",
+                "value": [
+                    "Galaxy Note10+"
+                ],
+                "boostType": "promote",
+                "boostMaxDocs": 1
+            }
+        },
+        {
+            "use": "reactivesearchQuery",
+            "continueOnError": false
+        },
+        {
+            "use": "elasticsearchQuery",
+            "continueOnError": false
+        }
+    ]
+}
