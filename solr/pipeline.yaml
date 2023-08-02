@@ -1,22 +1,21 @@
 enabled: true
 routes:
-- path: "/_solr/_reactivesearch"
-  method: POST
-  classify:
-    category: reactivesearch
-- path: "/_solr/_reactivesearch.v3"
-  method: POST
-  classify:
-    category: reactivesearch
-- path: "/_solr/_reactivesearch/validate"
-  method: POST
-  classify:
-    category: reactivesearch
+  - path: "/_solr/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+  - path: "/_solr/_reactivesearch.v3"
+    method: POST
+    classify:
+      category: reactivesearch
+  - path: "/_solr/_reactivesearch/validate"
+    method: POST
+    classify:
+      category: reactivesearch
 
 envs:
   SOLR_CREDS: ${{SOLR_CREDS}}
   SOLR_HOST: ${{SOLR_HOST_IP}}
-
 
 global_envs:
   - label: Solr Host
@@ -41,36 +40,36 @@ global_envs:
       expected_status: 200
 
 stages:
-- id: auth
-  use: authorization
-- id: extract app and profile
-  scriptRef: 'extractMetadata.js'
-  continueOnError: false
-  trigger:
-    expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
-- id: extract solr host and credentials
-  scriptRef: 'setEnvironment.js'
-  continueOnError: false
-  trigger:
-    expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
-- id: rs
-  use: reactivesearchQuery
-  inputs:
-    backend: solr
-  continueOnError: false
-- id: generate the query
-  scriptRef: generateQuery.js
-  continueOnError: false
-  trigger:
-    expression: "context.envs.path == '/_solr/_reactivesearch/validate'"
-- id: solr_query
-  use: solrQuery
-  continueOnError: false
-  trigger:
-    expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
-  inputs:
-    protocol: http
-    host: "{{solrHost}}"
-    app: "{{solrApp}}"
-    profile: "{{solrProfile}}"
-    credentials: "{{solrCreds}}"
+  - id: auth
+    use: authorization
+  - id: extract app and profile
+    scriptRef: "extractMetadata.js"
+    continueOnError: false
+    trigger:
+      expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
+  - id: extract solr host and credentials
+    scriptRef: "setEnvironment.js"
+    continueOnError: false
+    trigger:
+      expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
+  - id: rs
+    use: reactivesearchQuery
+    inputs:
+      backend: solr
+    continueOnError: false
+  - id: generate the query
+    scriptRef: generateQuery.js
+    continueOnError: false
+    trigger:
+      expression: "context.envs.path == '/_solr/_reactivesearch/validate'"
+  - id: solr_query
+    use: solrQuery
+    continueOnError: false
+    trigger:
+      expression: "context.envs.path != '/_solr/_reactivesearch/validate'"
+    inputs:
+      protocol: http
+      host: "{{solrHost}}"
+      app: "{{solrApp}}"
+      profile: "{{solrProfile}}"
+      credentials: "{{solrCreds}}"

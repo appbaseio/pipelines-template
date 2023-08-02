@@ -2,7 +2,7 @@
 
 This repo acts as a _get started_ template repo for the end user that just wants to get their hands dirty with ReactiveSearch Pipelines.
 
-### \[[What are Pipelines?](#what-are-pipelines)] \[[Pipelines Provided](#pipelines-provided)] \[[Prerequisites](#prerequisites)]
+### \[[What are Pipelines?](#what-are-pipelines)] \[[Pipelines Provided](#pipelines-provided)] \[[Prerequisites](#prerequisites)] \[[Utility Scripts](#utility-scripts)] 
 
 ## What are Pipelines?
 
@@ -81,3 +81,7 @@ To use any of the pipeline provided, just the `file` path needs to be changed in
 ## Prerequisites
 
 - Appbase.io URL will have to be saved as a secret in GitHub secrets with the keyword `APPBASEIOURL`. This URL is required by the action to deploy the pipeline. [Read more about setting GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+
+## Utility Scripts
+
+Besides the pipeline templates, this repo also contains some useful utility scripts for testing the pipelines and generating `one-click` version of the pipeline by automatically resolving dependencies. [More can be read about them over here](./.scripts/README.md).
