@@ -11,14 +11,6 @@
             }
         }
     ],
-    "global_envs": [
-        {
-            "key": "OPEN_AI_API_KEY",
-            "value": "",
-            "description": "OpenAI API Key to access their API",
-            "label": "OpenAI's API key"
-        }
-    ],
     "stages": [
         {
             "id": "authorize user",

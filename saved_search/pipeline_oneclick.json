@@ -19,25 +19,6 @@
         "save_search_METHOD": "POST",
         "save_search_headers": "{\"Content-Type\": \"application/json\"}"
     },
-    "global_envs": [
-        {
-            "key": "ES_URL",
-            "value": "",
-            "description": "The ElasticSearch URL to run ES requests to",
-            "label": "ElasticSearch URL",
-            "validate": {
-                "url": "${ES_URL}",
-                "method": "GET",
-                "expected_status": 200
-            }
-        },
-        {
-            "key": "SAVED_SEARCH_URL",
-            "label": "Save Search URL",
-            "description": "URL to send the save search request to",
-            "value": ""
-        }
-    ],
     "stages": [
         {
             "use": "authorization"
@@ -45,7 +26,7 @@
         {
             "id": "save_search",
             "async": true,
-            "script": "async function handleRequest() { try { const headersPassed = JSON.parse(context.envs.save_search_HEADERS); const res = await fetch(context.envs.save_search_URL, { method: context.envs.save_search_METHOD, body: context.request.body, headers: headersPassed }); } catch (e) { console.log('error', e); } return {}; }"
+            "script": "async function handleRequest() {try {    const headersPassed = JSON.parse(context.envs.save_search_HEADERS);    const res = await fetch(context.envs.save_search_URL,        {            method: context.envs.save_search_METHOD, body: context.request.body, headers: headersPassed        });} catch (e) { console.log('error', e); } return {};\n}"
         },
         {
             "use": "reactivesearchQuery",
@@ -54,10 +35,7 @@
             ]
         },
         {
-            "use": "elasticsearchQuery",
-            "inputs": {
-                "url": "${ES_URL}"
-            }
+            "use": "elasticsearchQuery"
         }
     ]
 }

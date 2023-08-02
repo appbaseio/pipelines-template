@@ -10,19 +10,6 @@
             }
         }
     ],
-    "global_envs": [
-        {
-            "key": "ES_URL",
-            "value": "",
-            "description": "The ElasticSearch URL to run ES requests to",
-            "label": "ElasticSearch URL",
-            "validate": {
-                "url": "${ES_URL}",
-                "method": "GET",
-                "expected_status": 200
-            }
-        }
-    ],
     "stages": [
         {
             "id": "data_muse_api",
@@ -44,10 +31,7 @@
         {
             "use": "elasticsearchQuery",
             "async": true,
-            "continueOnError": false,
-            "inputs": {
-                "url": "${ES_URL}"
-            }
+            "continueOnError": false
         },
         {
             "id": "merge_response",
@@ -55,7 +39,7 @@
             "needs": [
                 "data_muse_api"
             ],
-            "script": "function handleRequest() { return { response: { ...context.response, body: JSON.stringify({ ...JSON.parse(context.response.body), data_muse: context.data_muse_api }) } } }"
+            "script": "function handleRequest() {return {    response: {        ...context.response, body:            JSON.stringify({                ...JSON.parse(context.response.body), data_muse: context.data_muse_api            })    }}\n}"
         }
     ]
 }

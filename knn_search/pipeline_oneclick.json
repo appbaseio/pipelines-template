@@ -1,46 +1,38 @@
 {
-  "enabled": true,
-  "routes": [
-      {
-          "path": "/amazon_reviews/_reactivesearch",
-          "method": "POST",
-          "classify": {
-              "category": "reactivesearch"
-          }
-      }
-  ],
-  "global_envs": [
-      {
-          "key": "OPEN_AI_API_KEY",
-          "value": "",
-          "description": "OpenAI API Key to access their API",
-          "label": "OpenAI's API key"
-      }
-  ],
-  "stages": [
-      {
-          "id": "authorize user",
-          "use": "authorization"
-      },
-      {
-          "id": "fetch embeddings",
-          "use": "openAIEmbeddings",
-          "inputs": {
-              "apiKey": "${{ OPEN_AI_API_KEY }}",
-              "useWithReactiveSearchQuery": true
-          },
-          "continueOnError": false
-      },
-      {
-          "use": "reactivesearchQuery",
-          "needs": [
-              "fetch embeddings"
-          ],
-          "continueOnError": false
-      },
-      {
-          "use": "elasticsearchQuery",
-          "continueOnError": false
-      }
-  ]
+    "enabled": true,
+    "routes": [
+        {
+            "path": "/amazon_reviews/_reactivesearch",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "stages": [
+        {
+            "id": "authorize user",
+            "use": "authorization"
+        },
+        {
+            "id": "fetch embeddings",
+            "use": "openAIEmbeddings",
+            "inputs": {
+                "apiKey": "${{ OPEN_AI_API_KEY }}",
+                "useWithReactiveSearchQuery": true
+            },
+            "continueOnError": false
+        },
+        {
+            "use": "reactivesearchQuery",
+            "needs": [
+                "fetch embeddings"
+            ],
+            "continueOnError": false
+        },
+        {
+            "use": "elasticsearchQuery",
+            "continueOnError": false
+        }
+    ]
 }

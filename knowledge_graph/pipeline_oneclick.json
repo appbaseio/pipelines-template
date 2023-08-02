@@ -17,32 +17,13 @@
         ],
         "knowledgeGraphAPIKey": "${{ KNOWLEDGE_GRAPH_API_KEY }}"
     },
-    "global_envs": [
-        {
-            "key": "knowledgeGraphAPIKey",
-            "value": "${{ KNOWLEDGE_GRAPH_API_KEY }}",
-            "description": "API key to access Google's Knowledge Graph",
-            "label": "Knowledge Graph API Key"
-        },
-        {
-            "key": "ES_URL",
-            "value": "",
-            "description": "The ElasticSearch URL to run ES requests to",
-            "label": "ElasticSearch URL",
-            "validate": {
-                "url": "${ES_URL}",
-                "method": "GET",
-                "expected_status": 200
-            }
-        }
-    ],
     "stages": [
         {
             "use": "authorization"
         },
         {
             "id": "modify_request",
-            "script": "function handleRequest() { const reqBody = JSON.parse(context.request.body); return { request: { ...context.request, body: JSON.stringify({ ...reqBody, query: [...reqBody.query, { id: 'search2' }] }) } }; }"
+            "script": "function handleRequest() {const reqBody = JSON.parse(context.request.body);return {    request: {        ...context.request, body: JSON.stringify({            ...reqBody, query:                [...reqBody.query, { id: 'search2' }]        })    }};\n}"
         },
         {
             "use": "reactivesearchQuery"
@@ -50,14 +31,11 @@
         {
             "id": "google_knowledge_graph",
             "async": true,
-            "script": "async function handleRequest() { try { const URL = `https://kgsearch.googleapis.com/v1/entities:search?query=${context.envs.query}&key=${context.envs.knowledgeGraphAPIKey}&limit=1&indent=True`; const responseBody = await fetch(URL); const response = JSON.parse(responseBody); return { knowledge_graph: response } } catch (e) { } return context; }"
+            "script": "async function handleRequest() {try {    const URL = `https://kgsearch.googleapis.com/v1/entities:search?query=${context.envs.query}&key=${context.envs.knowledgeGraphAPIKey}&limit=1&indent=True`;    const responseBody = await fetch(URL); const response = JSON.parse(responseBody);    return { knowledge_graph: response }} catch (e) { } return context;\n}"
         },
         {
             "use": "elasticsearchQuery",
-            "async": true,
-            "inputs": {
-                "url": "${ES_URL}"
-            }
+            "async": true
         },
         {
             "id": "merge_response",
@@ -65,7 +43,7 @@
                 "elasticsearchQuery",
                 "google_knowledge_graph"
             ],
-            "script": "function handleRequest() { const esResponse = JSON.parse(context.elasticsearchQuery); const knowledgeGraph = context['knowledge_graph']; return { ...context, response: { ...context.response, body: JSON.stringify({ ...esResponse, knowledgeGraph }) } } }"
+            "script": "function handleRequest() {const esResponse = JSON.parse(context.elasticsearchQuery);const knowledgeGraph = context['knowledge_graph']; return {    ...context, response:        { ...context.response, body: JSON.stringify({ ...esResponse, knowledgeGraph }) }}\n}"
         }
     ]
 }

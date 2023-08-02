@@ -10,19 +10,6 @@
             }
         }
     ],
-    "global_envs": [
-        {
-            "key": "ES_URL",
-            "value": "",
-            "description": "The ElasticSearch URL to run ES requests to",
-            "label": "ElasticSearch URL",
-            "validate": {
-                "url": "${ES_URL}",
-                "method": "GET",
-                "expected_status": 200
-            }
-        }
-    ],
     "stages": [
         {
             "id": "auth",
@@ -30,7 +17,7 @@
         },
         {
             "id": "modify request",
-            "script": "function handleRequest() { const reqBody = JSON.parse(context.request.body); return { ...context, request: { ...context.request, body: JSON.stringify({ ...reqBody, query: [...reqBody.query, { id: 'search2' }] }) } }; }"
+            "script": "function handleRequest() {const reqBody = JSON.parse(context.request.body);return {    ...context, request: {        ...context.request, body: JSON.stringify({            ...reqBody,            query: [...reqBody.query, { id: 'search2' }]        })    }};\n}"
         },
         {
             "id": "query",
@@ -39,10 +26,7 @@
         {
             "id": "es_query",
             "use": "elasticsearchQuery",
-            "async": true,
-            "inputs": {
-                "url": "${ES_URL}"
-            }
+            "async": true
         }
     ]
 }
