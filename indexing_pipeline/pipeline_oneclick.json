@@ -3,12 +3,26 @@
     "description": "Index data into user-info with a location field",
     "routes": [
         {
-            "path": "/user-info/_doc",
+            "path": "/_indexing_example/_doc",
             "method": "POST",
             "classify": {
                 "category": "elasticsearch",
                 "acl": "index"
             }
+        }
+    ],
+    "global_envs": [
+        {
+            "key": "INDEX",
+            "value": "user-info",
+            "description": "Index where data will be indexed",
+            "label": "Index"
+        },
+        {
+            "key": "LOCATION_KEY",
+            "value": "location",
+            "description": "Key where the location details will be stored",
+            "label": "Location Key"
         }
     ],
     "stages": [
@@ -23,7 +37,7 @@
         },
         {
             "id": "add details to body",
-            "script": "function handleRequest() { const requestBody = JSON.parse(context.request.body) return { request: { ...context.request, body: JSON.stringify({ ...requestBody, location: context.extractedLocation }) } } }",
+            "script": "function handleRequest() { const requestBody = JSON.parse(context.request.body); const locationKey = context.envs.LOCATION_KEY; if (!locationKey) locationKey = 'location'; return { request: { ...context.request, body: JSON.stringify({ ...requestBody, locationKey: context.extractedLocation }) } } }",
             "needs": [
                 "get location details"
             ]
