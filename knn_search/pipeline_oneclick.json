@@ -2,25 +2,11 @@
     "enabled": true,
     "routes": [
         {
-            "path": "/_knn_search/_reactivesearch",
+            "path": "/amazon_reviews/_reactivesearch",
             "method": "POST",
             "classify": {
                 "category": "reactivesearch"
             }
-        }
-    ],
-    "global_envs": [
-        {
-            "key": "INDEX",
-            "value": "amazon-reviews",
-            "description": "Index where AI Answer queries are run against",
-            "label": "Index"
-        },
-        {
-            "key": "OPEN_AI_API_KEY",
-            "value": "",
-            "description": "OpenAI API Key to access their API. This value can be set as empty if OpenAI API Key is configured in the ReactiveSearch dashboard",
-            "label": "OpenAI's API key"
         }
     ],
     "stages": [
