@@ -18,25 +18,25 @@
             "label": "MongoDB Host",
             "key": "MONGO_HOST",
             "value": "",
-            "description": "The mongoDB host to connect to"
+            "description": "The mongoDB host to connect to. Get it from https://cloud.mongodb.com/ by navigating to Deployment -> Database -> Select your Cluster -> Connect"
         },
         {
             "label": "MongoDB Database Name",
             "key": "MONGO_DB",
             "value": "sample_airbnb",
-            "description": "The mongoDB database to connect to"
+            "description": "The mongoDB database to connect to. Get it from https://cloud.mongodb.com/ by navigating to Deployment -> Database -> Select your Cluster -> Connect"
         },
         {
             "label": "MongoDB Collection",
             "key": "MONGO_COLLECTION",
             "value": "listingsAndReviews",
-            "description": "The mongoDB collection to connect to"
+            "description": "The mongoDB collection to connect to. Get it from https://cloud.mongodb.com/ by navigating to Deployment -> Database -> Select your Cluster -> Browse Collections"
         },
         {
             "label": "MongoDB Credentials",
             "key": "MONGO_CREDS",
             "value": "",
-            "description": "Credentials to access the mongoDB instance"
+            "description": "Credentials to access the mongoDB instance. Get it from https://cloud.mongodb.com/ by navigating to Deployment -> Database -> Select your Cluster -> Connect"
         }
     ],
     "stages": [
