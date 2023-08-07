@@ -3,7 +3,7 @@
     "description": "Index pipeline to store vectorized data",
     "routes": [
         {
-            "path": "/_knn_index/_doc",
+            "path": "/amazon_reviews/_doc",
             "method": "POST",
             "classify": {
                 "category": "elasticsearch",
@@ -11,28 +11,10 @@
             }
         }
     ],
-    "global_envs": [
-        {
-            "key": "INDEX",
-            "value": "amazon-reviews",
-            "description": "Index where AI Answer queries are run against",
-            "label": "Index"
-        },
-        {
-            "key": "OPEN_AI_API_KEY",
-            "value": "",
-            "description": "OpenAI API Key to access their API. This value can be set as empty if OpenAI API Key is configured in the ReactiveSearch dashboard",
-            "label": "OpenAI's API key"
-        }
-    ],
     "stages": [
         {
             "id": "authorize user",
             "use": "authorization"
-        },
-        {
-            "id": "parse OpenAI API key",
-            "script": "function handleRequest() { if (!context.envs.OPEN_AI_API_KEY || context.envs.OPEN_AI_API_KEY == '') { return { envs: { OPEN_AI_API_KEY: context.openAIConfig.open_ai_key, ...context.envs } } } }"
         },
         {
             "id": "fetch embeddings",
