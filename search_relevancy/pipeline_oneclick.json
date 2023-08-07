@@ -16,6 +16,26 @@
             "best-buy-dataset"
         ]
     },
+    "global_envs": [
+        {
+            "key": "INDEX",
+            "value": "",
+            "description": "Index where data will be indexed",
+            "label": "Index"
+        },
+        {
+            "key": "BOOST_SCORE_DATAFIELD",
+            "value": "categoryPath.name",
+            "description": "DataField to boost by score",
+            "label": "Boost By Score Datafield"
+        },
+        {
+            "key": "PROMOTE_RESULTS_DATAFIELD",
+            "value": "albumTitle",
+            "description": "DataField to promote results",
+            "label": "Promote Results Datafield"
+        }
+    ],
     "stages": [
         {
             "id": "authorization",
@@ -49,7 +69,7 @@
             "use": "boost",
             "continueOnError": false,
             "inputs": {
-                "dataField": "categoryPath.name",
+                "dataField": "${{BOOST_SCORE_DATAFIELD}}",
                 "value": [
                     "cell Phones",
                     "Prepaid Phones"
@@ -62,7 +82,7 @@
             "use": "boost",
             "continueOnError": false,
             "inputs": {
-                "dataField": "albumTitle",
+                "dataField": "${{PROMOTE_RESULTS_DATAFIELD}}",
                 "value": [
                     "Galaxy Note10+"
                 ],
