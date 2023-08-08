@@ -1,13 +1,21 @@
 {
     "enabled": true,
-    "description": "Pipeline to use query rules pre-built stages",
+    "description": "The pipeline applies query rules on a search index to fetch suggestions, allows parsing of user query, filter by a facet, promote results to the top.",
     "routes": [
         {
-            "path": "/good-books-ds-pipeline/_reactivesearch",
+            "path": "/query-rules-example",
             "method": "POST",
             "classify": {
                 "category": "reactivesearch"
             }
+        }
+    ],
+    "global_envs": [
+        {
+            "key": "INDEX",
+            "value": "good-books-ds-pipeline",
+            "description": "Index where data will be searched",
+            "label": "Index"
         }
     ],
     "stages": [
