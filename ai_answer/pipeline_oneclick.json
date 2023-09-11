@@ -40,6 +40,10 @@
             "use": "authorization"
         },
         {
+            "id": "parse OpenAI API key",
+            "script": "function handleRequest() { if (!context.envs.OPEN_AI_API_KEY || context.envs.OPEN_AI_API_KEY == '') { return { envs: { OPEN_AI_API_KEY: context.envs.openAIConfig.open_ai_key, ...context.envs } } } }"
+        },
+        {
             "id": "query",
             "use": "reactivesearchQuery"
         },

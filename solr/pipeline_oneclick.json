@@ -1,5 +1,6 @@
 {
     "enabled": true,
+    "description": "The Solr pipeline connects to a Solr cluster with ReactiveSearch API, enabling frontend UIs to be built using ReactiveSearch and SearchBox UI kits for React, Vue, Flutter, and JavaScript",
     "routes": [
         {
             "path": "/_solr/_reactivesearch",

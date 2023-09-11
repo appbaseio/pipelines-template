@@ -2,17 +2,35 @@
     "enabled": true,
     "routes": [
         {
-            "path": "/amazon_reviews/_reactivesearch",
+            "path": "/_knn_search/_reactivesearch",
             "method": "POST",
             "classify": {
                 "category": "reactivesearch"
             }
         }
     ],
+    "global_envs": [
+        {
+            "key": "INDEX",
+            "value": "amazon-reviews",
+            "description": "Index where data will be searched",
+            "label": "Index"
+        },
+        {
+            "key": "OPEN_AI_API_KEY",
+            "value": "",
+            "description": "OpenAI API Key to access their API",
+            "label": "OpenAI's API key"
+        }
+    ],
     "stages": [
         {
             "id": "authorize user",
             "use": "authorization"
+        },
+        {
+            "id": "parse OpenAI API key",
+            "script": "function handleRequest() { if (!context.envs.OPEN_AI_API_KEY || context.envs.OPEN_AI_API_KEY == '') { return { envs: { OPEN_AI_API_KEY: context.envs.openAIConfig.open_ai_key, ...context.envs } } } }"
         },
         {
             "id": "fetch embeddings",
