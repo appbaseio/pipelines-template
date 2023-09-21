@@ -1,0 +1,44 @@
+enabled: true
+description: Image Search Pipeline
+routes:
+  - path: "/image-search/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  gcloud_token: ${{ GCLOUD_ACCESS_TOKEN }}
+  bing_token: ${{ BING_ACCESS_TOKEN }}
+  project_id: ${{ GCLOUD_PROJECT_ID }}
+stages:
+  - id: auth
+    use: authorization
+  - id: parse value and image
+    scriptRef: parseValueAndImage.js
+    continueOnError: false
+  - id: get caption
+    use: httpRequest
+    inputs:
+      url: https://us-central1-aiplatform.googleapis.com/v1/projects/{{project_id}}/locations/us-central1/publishers/google/models/imagetext:predict
+      body: "{{{captionBody}}}"
+      headers:
+        Authorization: Bearer {{gcloud_token}}
+        Content-Type: application/json
+      method: POST
+    continueOnError: false
+    trigger:
+      expression: context.isImagePassed == true
+  - id: build bing body
+    scriptRef: buildBingBody.js
+    continueOnError: false
+  - id: make Bing API call
+    use: httpRequest
+    inputs:
+      url: https://api.bing.microsoft.com/v7.0/images/search?q={{bingQuery}}&mkt=en-US&count=10&responseFilter=webPages
+      headers:
+        Ocp-Apim-Subscription-Key: "{{bing_token}}"
+      method: GET
+      body: ""
+    continueOnError: false
+  - id: parse response into RS format
+    scriptRef: parseResponseToRS.js
+    continueOnError: false

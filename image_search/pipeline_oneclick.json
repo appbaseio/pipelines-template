@@ -1,0 +1,89 @@
+{
+    "enabled": true,
+    "description": "Image Search Pipeline",
+    "routes": [
+      {
+        "path": "/image-search/_reactivesearch",
+        "method": "POST",
+        "classify": {
+          "category": "reactivesearch"
+        }
+      }
+    ],
+    "global_envs": [
+        {
+            "key": "GCLOUD_ACCESS_TOKEN",
+            "value": "",
+            "description": "Access token for Google Cloud. Can be generated using `gcloud auth print-access-token`",
+            "label": "Google Cloud Access Token"
+        },
+        {
+            "key": "BING_API_KEY",
+            "value": "",
+            "description": "API Key for Bing Web Search",
+            "label": "Bing API Key"
+        },
+        {
+            "key": "GCLOUD_PROJECT_ID",
+            "value": "",
+            "description": "Project ID from Google Cloud. Read https://support.google.com/googleapi/answer/7014113?hl=en for more details.",
+            "label": "Google Cloud Project ID"
+        }
+    ],
+    "envs": {
+      "gcloud_token": "${{ GCLOUD_ACCESS_TOKEN }}",
+      "bing_token": "${{ BING_API_KEY }}",
+      "project_id": "${{ GCLOUD_PROJECT_ID }}"
+    },
+    "stages": [
+      {
+        "id": "auth",
+        "use": "authorization"
+      },
+      {
+        "id": "parse value and image",
+        "script": "function handleRequest() { /* Parse the request body and read the value and the image of * the first search type of object. */ const requestBody = JSON.parse(context.request.body); const valueFromEnvs = context.envs.query; if (!requestBody.query || !requestBody.query.length) { throw Error('`query` is a required paramter in the body!'); } let matchedId = ''; let textValue = ''; let base64Img = ''; for (let i = 0; i < requestBody.query.length; i++) { const queryEach = requestBody.query[i]; if (queryEach.type && queryEach.type != 'search') continue; matchedId = queryEach.id; if (queryEach.value) { textValue = queryEach.value; } if (queryEach.imageValue) { base64Img = parseBase64Part(queryEach.imageValue); } } if (textValue == '' && valueFromEnvs) { textValue = valueFromEnvs; } /* Remove any special characters from the textValue */ if (textValue && textValue != '') { textValue = textValue.replaceAll('\n', ''); } if (matchedId == '') { /* There are no queries with search type */ throw Error('at least one query with search type is required!'); } /* Make sure that one of base64 or value was passed */ if (base64Img == '' && textValue == '') { throw Error('one of `value` or `imageValue` is required!'); } let gcloudBody = ''; if (base64Img != '') { /* Build the body for gcloud call */ gcloudBody = buildGcloudBodyForCaption(base64Img); } return { matchedId: matchedId, textValue: textValue, isImagePassed: base64Img != '', captionBody: gcloudBody, }; } function buildGcloudBodyForCaption(base64ImageStr) { /** * Build the body for the gcloud API call to get the * caption for the image. */ return JSON.stringify({ instances: [ { image: { bytesBase64Encoded: base64ImageStr, }, }, ], parameters: { sampleCount: 1, language: 'en', }, }); } function parseBase64Part(base64Img) { /** * Parse the base64 part of the image string passed * and return that. */ const parts = base64Img.split(','); if (parts.length !== 2) { throw Error('invalid input for base64 image'); } return parts[1]; }",
+        "continueOnError": false
+      },
+      {
+        "id": "get caption",
+        "use": "httpRequest",
+        "inputs": {
+          "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/{{project_id}}/locations/us-central1/publishers/google/models/imagetext:predict",
+          "body": "{{{captionBody}}}",
+          "headers": {
+            "Authorization": "Bearer {{gcloud_token}}",
+            "Content-Type": "application/json"
+          },
+          "method": "POST"
+        },
+        "continueOnError": false,
+        "trigger": {
+          "expression": "context.isImagePassed == true"
+        }
+      },
+      {
+        "id": "build bing body",
+        "script": "function handleRequest() { /* If the base64 image is not empty, get the caption for it */ let finalQuery = ''; let textValue = context.textValue; let isImagePassed = context.isImagePassed; if (isImagePassed) { /* Read the response body */ const responseFromGcloud = JSON.parse(context.response.body); const caption = responseFromGcloud.predictions[0]; finalQuery = caption; } if (textValue && textValue != '') { const separator = finalQuery.length != 0 ? ' ' : ''; finalQuery += separator + textValue; } return { bingQuery: encodeURIComponent(finalQuery), rawBingQuery: finalQuery, }; }",
+        "continueOnError": false
+      },
+      {
+        "id": "make Bing API call",
+        "use": "httpRequest",
+        "inputs": {
+          "url": "https://api.bing.microsoft.com/v7.0/images/search?q={{bingQuery}}&mkt=en-US&count=10&responseFilter=webPages",
+          "headers": {
+            "Ocp-Apim-Subscription-Key": "{{bing_token}}"
+          },
+          "method": "GET",
+          "body": ""
+        },
+        "continueOnError": false
+      },
+      {
+        "id": "parse response into RS format",
+        "script": "function handleRequest() { const responseBody = JSON.parse(context.response.body); const values = responseBody.value; const matchedId = context.matchedId; /* The values will be an array of objects that we will convert * to RS equivalent */ const hitsAsRS = []; for (let i = 0; i < values.length; i++) { const hitEach = values[i]; hitsAsRS.push({ _type: '_doc', _id: hitEach.imageId, _source: hitEach, }); } const hitsAsMap = { querySearchedFor: context.rawBingQuery, hits: { total: { value: hitsAsRS.length, }, hits: hitsAsRS, }, }; const RSResponse = {}; RSResponse['SearchResult'] = hitsAsMap; return { response: { body: JSON.stringify(RSResponse), }, }; }",
+        "continueOnError": false
+      }
+    ]
+  }
