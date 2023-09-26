@@ -1,0 +1,73 @@
+{
+    "enabled": true,
+    "description": "QNA Pipeline",
+    "routes": [
+      {
+        "path": "/qna/_reactivesearch",
+        "method": "POST",
+        "classify": {
+          "category": "reactivesearch"
+        }
+      }
+    ],
+    "global_envs": [
+        {
+            "key": "NEWS_API_KEY",
+            "value": "",
+            "description": "API Key for the News API",
+            "label": "News API Key"
+        }
+    ],
+    "envs": {
+      "NEWS_API_KEY": "${{ NEWS_API_KEY }}"
+    },
+    "stages": [
+      {
+        "id": "auth",
+        "use": "authorization"
+      },
+      {
+        "use": "useCache"
+      },
+      {
+        "id": "translateUserQuery",
+        "script": "const queriesInput = `You have access to a search API that returns recent news articles.\r\nGenerate an array of search queries that are relevant to this question.\r\nUse a variation of related keywords for the queries, trying to be as general as possible.\r\nInclude as many queries as you can think of, including and excluding terms.\r\nFor example, include queries like ['keyword_1 keyword_2', 'keyword_1', 'keyword_2'].\r\nBe creative. Return a maximum of 5 queries and chose to represent all of the user question in these.\r\n\r\nUser question: {USER_INPUT}\r\n\r\nFormat: {{\"queries\": [\"query_1\", \"query_2\", \"query_3\"]}}\r\n`;\r\n\r\nfunction handleRequest() {\r\n    const query = context.envs.query;\r\n\r\n    if (!query) {\r\n        throw Error('`value` is required to search!');\r\n    }\r\n\r\n    const chatInputWithQuery = queriesInput.replace('{USER_INPUT}', query);\r\n    return {\r\n        queryGenBody: JSON.stringify({\r\n            model: 'gpt-3.5-turbo',\r\n            temperature: 0,\r\n            messages: [\r\n                {\r\n                    role: 'system',\r\n                    content: 'You are a helpful assistant.',\r\n                },\r\n                {\r\n                    role: 'user',\r\n                    content: chatInputWithQuery,\r\n                },\r\n            ],\r\n        }),\r\n    };\r\n}\r\n"
+      },
+      {
+        "id": "queryGenRequest",
+        "use": "httpRequest",
+        "inputs": {
+          "url": "https://api.openai.com/v1/chat/completions",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{openAIConfig.open_ai_key}}"
+          },
+          "method": "POST",
+          "body": "{{{queryGenBody}}}"
+        }
+      },
+      {
+        "id": "fetch from news API",
+        "script": "async function handleRequest() {\r\n    const responseBody = JSON.parse(context.response.body);\r\n\r\n    let queriesParsed = [];\r\n    try {\r\n        const queriesReturned = responseBody.choices[0].message.content;\r\n        queriesParsed = JSON.parse(queriesReturned)['queries'];\r\n    } catch (e) {\r\n        throw Error('Error while parsing ChatGPT response: ' + e);\r\n    }\r\n\r\n    \/* Using the parsed queries, make calls to News API *\/\r\n\r\n    const totalCalls = queriesParsed.length;\r\n    const newsAPIKey = context.envs.NEWS_API_KEY;\r\n    console.log(totalCalls);\r\n\r\n    if (!newsAPIKey) {\r\n        throw Error('News API key needs to be defined!');\r\n    }\r\n\r\n    let topTwoEach = await Promise.all(\r\n        queriesParsed.map(async (query) => {\r\n            const res = await fetch(\r\n                `https:\/\/newsapi.org\/v2\/everything?q=${query}&apiKey=${newsAPIKey}&pageSize=2&sortBy=relevancy`\r\n            );\r\n            const jsonResponse = await res.json();\r\n\r\n            \/* Prepare the top 2 results for each query *\/\r\n            return jsonResponse.articles.map((a) => {\r\n                a['query'] = query;\r\n                return a;\r\n            });\r\n        })\r\n    );\r\n\r\n    \/* Merge the articles *\/\r\n    let finalArticles = [];\r\n    topTwoEach.forEach((r) => {\r\n        finalArticles.push(...r);\r\n    });\r\n\r\n    const urlKeyObj = {};\r\n\r\n    finalArticles.forEach((a) => {\r\n        if (a.title == null) return;\r\n\r\n        urlKeyObj[a.url] = a;\r\n    });\r\n\r\n    topTwoEach = finalArticles;\r\n\r\n    return {\r\n        queriesParsed: JSON.stringify(queriesParsed),\r\n        topTwoEach: JSON.stringify(topTwoEach),\r\n    };\r\n}\r\n",
+        "continueOnError": false,
+        "async": true
+      },
+      {
+        "id": "synthesize answer",
+        "needs": [
+          "fetch from news API"
+        ],
+        "async": true,
+        "script": "const ANSWER_PROMPT = `\r\nGenerate an answer to the user's question based on the given search results. \r\nTOP_RESULTS: {results}\r\nUSER_QUESTION: {USER_QUESTION}\r\n\r\nInclude as much information as possible in the answer. Reference the relevant search result urls as markdown links.\r\n`;\r\n\r\nasync function handleRequest() {\r\n    const openAIKey = context.envs.openAIConfig.open_ai_key;\r\n    const queriesParsed = JSON.parse(context.queriesParsed);\r\n    const topTwoEach = JSON.parse(context.topTwoEach);\r\n\r\n    const bodyToReturn = {\r\n        results: {\r\n            hits: topTwoEach.slice(0, 10),\r\n            count: topTwoEach.length,\r\n        },\r\n        queries: {\r\n            count: queriesParsed.length,\r\n            hits: queriesParsed,\r\n        },\r\n        resultsByQuery: topTwoEach,\r\n    };\r\n\r\n    const formattedResults = topTwoEach.slice(0, 10).map((a) => {\r\n        return JSON.stringify({\r\n            title: a['title'],\r\n            description: a['description'],\r\n            url: a['url'],\r\n        });\r\n    });\r\n\r\n    const query = context.envs.query;\r\n\r\n    let promptWithFormat = ANSWER_PROMPT.replace(\r\n        '{results}',\r\n        formattedResults.toString()\r\n    );\r\n    promptWithFormat = promptWithFormat.replace('{USER_QUESTION}', query);\r\n\r\n    \/* Make the answer call *\/\r\n    const answerResponse = await makeAnswerCall(\r\n        openAIKey,\r\n        JSON.stringify({\r\n            model: 'gpt-3.5-turbo',\r\n            temperature: 0.5,\r\n            messages: [\r\n                {\r\n                    role: 'system',\r\n                    content: 'You are a helpful assistant.',\r\n                },\r\n                {\r\n                    role: 'user',\r\n                    content: promptWithFormat,\r\n                },\r\n            ],\r\n        })\r\n    );\r\n\r\n    return {\r\n        customResponse: JSON.stringify(bodyToReturn),\r\n        answerCall: JSON.stringify(answerResponse),\r\n    };\r\n}\r\n\r\nasync function makeAnswerCall(apiKey, body) {\r\n    const answerResponse = await fetch(\r\n        'https:\/\/api.openai.com\/v1\/chat\/completions',\r\n        {\r\n            method: 'POST',\r\n            headers: {\r\n                'Content-Type': 'application\/json',\r\n                Authorization: `Bearer ${apiKey}`,\r\n            },\r\n            body: body,\r\n        }\r\n    );\r\n    const response = await answerResponse.json();\r\n    return response;\r\n}\r\n",
+        "continueOnError": false
+      },
+      {
+        "id": "merge response",
+        "needs": [
+          "synthesize answer"
+        ],
+        "continueOnError": false,
+        "script": "function handleRequest() {\r\n    const responseBody = JSON.parse(context.customResponse);\r\n\r\n    \/* Read the AI Answer response *\/\r\n    const answerBody = JSON.parse(context.answerCall);\r\n    const answerMessage = answerBody.choices[0].message.content;\r\n\r\n    responseBody['answer'] = answerMessage;\r\n\r\n    return {\r\n        response: {\r\n            ...context.response,\r\n            body: JSON.stringify(responseBody),\r\n        },\r\n    };\r\n}\r\n"
+      }
+    ]
+  }

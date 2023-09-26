@@ -1,0 +1,40 @@
+enabled: true
+description: QNA Pipeline
+routes:
+  - path: "/qna/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  NEWS_API_KEY: ${{ NEWS_API_KEY }}
+
+stages:
+  - id: auth
+    use: authorization
+  - use: useCache
+  - id: translateUserQuery
+    scriptRef: translateUserQuery
+  - id: queryGenRequest
+    use: httpRequest
+    inputs:
+      url: https://api.openai.com/v1/chat/completions
+      headers:
+        Content-Type: application/json
+        Authorization: Bearer {{openAIConfig.open_ai_key}}
+      method: POST
+      body: "{{{queryGenBody}}}"
+  - id: fetch from news API
+    scriptRef: fetchFromNewsAPI
+    continueOnError: false
+    async: true
+  - id: synthesize answer
+    needs:
+      - fetch from news API
+    async: true
+    scriptRef: synthesizeAnswer
+    continueOnError: false
+  - id: merge response
+    needs:
+      - synthesize answer
+    continueOnError: false
+    scriptRef: mergeResponse
