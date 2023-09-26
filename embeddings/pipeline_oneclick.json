@@ -1,0 +1,81 @@
+{
+    "enabled": true,
+    "description": "Pipeline for QnA on winter olympics 2022",
+    "routes": [
+        {
+            "path": "/winter-olympics-2022-qna/_reactivesearch",
+            "method": "POST",
+            "classify": {
+                "category": "reactivesearch"
+            }
+        }
+    ],
+    "envs": {
+        "index": [
+            "olympics-2022-openai"
+        ]
+    },
+    "stages": [
+        {
+            "id": "authorize user",
+            "use": "authorization"
+        },
+        {
+            "id": "initial checks",
+            "script": "function handleRequest() { /** * Check if the incoming request is a question. */ const requestBody = JSON.parse(context.request.body); const searchComponent = requestBody.query.filter( (q) => q.id == 'OlympicComponent' ); if (!requestBody.settings) { requestBody.settings = {}; } requestBody.settings.backend = 'opensearch'; /* If type is not search, we do not continue */ if ( !searchComponent || searchComponent.length == 0 || searchComponent[0].type != 'search' ) { return { skipAnswer: true, request: { body: JSON.stringify(requestBody), }, }; } // Inject the vectorDataField in the request body for (let i = 0; i < requestBody.query.length; i++) { const queryEach = requestBody.query[i]; if (queryEach.type == 'search' && queryEach.id == 'OlympicComponent') { requestBody.query[i].vectorDataField = 'embedding'; requestBody.query[i].excludeFields = ['embedding']; } } return { request: { body: JSON.stringify(requestBody), }, }; }",
+            "continueOnError": false
+        },
+        {
+            "id": "fetch embeddings",
+            "use": "openAIEmbeddings",
+            "inputs": {
+                "apiKey": "{{openAIConfig.open_ai_key}}",
+                "useWithReactiveSearchQuery": true
+            },
+            "continueOnError": false
+        },
+        {
+            "use": "reactivesearchQuery",
+            "needs": [
+                "fetch embeddings"
+            ],
+            "continueOnError": false
+        },
+        {
+            "use": "elasticsearchQuery",
+            "continueOnError": false
+        },
+        {
+            "id": "generate question",
+            "script": "function handleRequest() {\r\n    \/**\r\n     * Read the response and generate the question for ChatGPT\r\n     * that we will send.\r\n     *\r\n     * We need to make sure that the token count is within limit\r\n     * and we keep 500 tokens for the answer.\r\n     *\/\r\n    const responseBody = JSON.parse(context.response.body);\r\n    const query = context.envs.query;\r\n\r\n    if (!query) {\r\n        throw Error('`value` cannot be empty!');\r\n    }\r\n\r\n    if (!responseBody.OlympicComponent?.hits?.hits) {\r\n        throw Error('got 0 hits for the search query!');\r\n    }\r\n\r\n    const hits = responseBody.OlympicComponent.hits.hits.slice(0, 10);\r\n\r\n    const intro =\r\n        'Use the below articles on the 2022 Winter Olympics to answer the subsequent question. If the answer cannot be found in the articles, write \"I could not find an answer.\"\\n';\r\n    const question = `\\n\\nQuestion: ${query}`;\r\n    let message = intro;\r\n\r\n    for (let i = 0; i < hits.length; i++) {\r\n        const text = hits[i]._source.text;\r\n        const nextArticle = `\\n\\nWikipedia article section:\\n\"\"\"\\n${text}\\n\"\"\"`;\r\n\r\n        \/* Add check to make sure that next_article doesn't overload the token\r\n         * budget else break\r\n         *\/\r\n        if (isTokenOutOfBudget(message + nextArticle + question)) {\r\n            break;\r\n        }\r\n\r\n        message += nextArticle;\r\n    }\r\n\r\n    const finalQuestion = message + question;\r\n\r\n    const chatGPTBody = {\r\n        model: 'gpt-3.5-turbo',\r\n        messages: [\r\n            {\r\n                role: 'system',\r\n                content: 'You answer questions about the 2022 Winter Olympics.',\r\n            },\r\n            { role: 'user', content: finalQuestion },\r\n        ],\r\n        temperature: 0,\r\n    };\r\n\r\n    return {\r\n        chatGPTQuestion: JSON.stringify(chatGPTBody),\r\n        ogResponse: JSON.stringify(responseBody),\r\n    };\r\n}\r\n\r\nfunction countTokens(text) {\r\n    const tokens = text.split(\/\\s+\/);\r\n    return tokens.length * 3;\r\n}\r\n\r\nfunction isTokenOutOfBudget(text, budget = 4096 - 500 - 25) {\r\n    \/**\r\n     * The token budget is the allowed token limit for the input\r\n     * we are generating. Default is 4096 (allowed tokens for gpt-3.5-turbo)\r\n     * - 500 (expected token usage for the answer) - 25 (margin of error).\r\n     *\r\n     * We are keeping the margin of error because the token calculation\r\n     * we are doing for the text is not 100% accurate as we are not using\r\n     * the tiktoken library.\r\n     *\/\r\n    const tokens = countTokens(text);\r\n    return tokens > budget;\r\n}\r\n",
+            "continueOnError": false,
+            "trigger": {
+                "expression": "context.skipAnswer != true"
+            }
+        },
+        {
+            "id": "askGPT",
+            "use": "httpRequest",
+            "inputs": {
+                "body": "{{{chatGPTQuestion}}}",
+                "url": "https://api.openai.com/v1/chat/completions",
+                "headers": {
+                    "Authorization": "Bearer {{openAIConfig.open_ai_key}}",
+                    "Content-Type": "application/json"
+                },
+                "method": "POST"
+            },
+            "trigger": {
+                "expression": "context.skipAnswer != true"
+            }
+        },
+        {
+            "id": "formatResponse",
+            "script": "function handleRequest() {\r\n    const gptResponse = JSON.parse(context.response.body);\r\n    const ogResponse = JSON.parse(context.ogResponse);\r\n\r\n    ogResponse['OlympicComponent']['AIAnswer'] = gptResponse;\r\n    return {\r\n        response: {\r\n            body: JSON.stringify(ogResponse),\r\n        },\r\n    };\r\n}\r\n",
+            "continueOnError": false,
+            "trigger": {
+                "expression": "context.skipAnswer != true"
+            }
+        }
+    ]
+}

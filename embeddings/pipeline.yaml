@@ -1,0 +1,49 @@
+enabled: true
+description: Pipeline for QnA on winter olympics 2022
+routes:
+  - path: "/winter-olympics-2022-qna/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  index:
+    - olympics-2022-openai
+stages:
+  - id: authorize user
+    use: authorization
+  - id: initial checks
+    scriptRef: initChecks.js
+    continueOnError: false
+  - id: fetch embeddings
+    use: openAIEmbeddings
+    inputs:
+      apiKey: "{{openAIConfig.open_ai_key}}"
+      useWithReactiveSearchQuery: true
+    continueOnError: false
+  - use: reactivesearchQuery
+    needs:
+      - fetch embeddings
+    continueOnError: false
+  - use: elasticsearchQuery
+    continueOnError: false
+  - id: generate question
+    scriptRef: generateQuestion
+    continueOnError: false
+    trigger:
+      expression: context.skipAnswer != true
+  - id: askGPT
+    use: httpRequest
+    inputs:
+      body: "{{{chatGPTQuestion}}}"
+      url: https://api.openai.com/v1/chat/completions
+      headers:
+        Authorization: Bearer {{openAIConfig.open_ai_key}}
+        Content-Type: application/json
+      method: POST
+    trigger:
+      expression: context.skipAnswer != true
+  - id: formatResponse
+    scriptRef: formatRepsponse
+    continueOnError: false
+    trigger:
+      expression: context.skipAnswer != true
