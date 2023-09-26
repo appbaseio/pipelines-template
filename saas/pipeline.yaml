@@ -1,0 +1,46 @@
+enabled: true
+description: SaaS Example Pipeline on ReactiveSearch docs dataset
+routes:
+  - path: "/unified-reactivesearch-web-data-saas/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  index:
+    - unified-reactivesearch-web-data
+stages:
+  - id: auth
+    use: authorization
+  - id: generateRequest
+    scriptRef: generateRequest
+    continueOnError: false
+  - id: query
+    use: reactivesearchQuery
+    continueOnError: false
+  - id: es_query
+    use: elasticsearchQuery
+    continueOnError: false
+  - id: typo check
+    scriptRef: checkTypo
+    continueOnError: false
+  - id: researchQuery
+    use: reactivesearchQuery
+    continueOnError: false
+    trigger:
+      expression: context.envs.research == true
+  - id: research_es_query
+    use: elasticsearchQuery
+    continueOnError: false
+    trigger:
+      expression: context.envs.research == true
+  - id: normalize-url
+    scriptRef: normalizeUrls
+    continueOnError: false
+  - id: answerAI
+    use: AIAnswer
+    enabled: false
+    inputs:
+      topDocsForContext: 3
+      docTemplate: "${source.name}"
+      queryTemplate: "Can you tell me about: ${value}"
+      apiKey: "{{ context.envs.openAIConfig.open_ai_key }}"
