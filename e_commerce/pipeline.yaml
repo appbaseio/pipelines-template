@@ -1,0 +1,46 @@
+enabled: true
+description: Best Buy Search Pipeline
+routes:
+  - path: "/best-buy-set-pipeline/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+  - path: "/best-buy-set-2023-pipeline/_reactivesearch"
+    method: POST
+    classify:
+      category: reactivesearch
+envs:
+  index:
+    - best-buy-set-2023
+stages:
+  - id: auth
+    use: authorization
+  - id: generateRequest
+    scriptRef: generateRequest
+    continueOnError: true
+  - id: query
+    use: reactivesearchQuery
+    continueOnError: false
+  - id: es_query
+    use: elasticsearchQuery
+    continueOnError: false
+  - id: typo check
+    scriptRef: checkTypo
+    continueOnError: false
+  - id: researchQuery
+    use: reactivesearchQuery
+    continueOnError: false
+    trigger:
+      expression: context.envs.research == true
+  - id: research_es_query
+    use: elasticsearchQuery
+    continueOnError: false
+    trigger:
+      expression: context.envs.research == true
+  - id: answerAI
+    use: AIAnswer
+    inputs:
+      topDocsForContext: 3
+      docTemplate: "${source.name}"
+      queryTemplate: "Can you tell me about: ${value}"
+      apiKey: "{{ context.envs.openAIConfig.open_ai_key }}"
